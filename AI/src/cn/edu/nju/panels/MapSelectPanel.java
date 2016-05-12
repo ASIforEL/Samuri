@@ -1,21 +1,16 @@
 package cn.edu.nju.panels;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Toolkit;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+
+import logic.Samurai;
 
 //地图选择面板
 public class MapSelectPanel extends BackGroundPanel{
@@ -155,6 +150,11 @@ public class MapSelectPanel extends BackGroundPanel{
 	 @Override
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
+			/*
+			 *测试绘制血条和能量 
+			new Samurai().drawBlood(g, this);
+			new Samurai().drawPower(g, this);
+			*/
 		}
 
 }

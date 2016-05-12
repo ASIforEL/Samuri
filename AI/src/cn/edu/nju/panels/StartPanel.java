@@ -15,8 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
-import cn.edu.nju.battlefield.GameField;
-
 public class StartPanel extends JFrame {  
 
 	private JLayeredPane mainPane;  
@@ -38,7 +36,6 @@ public class StartPanel extends JFrame {
 		//初始界面的组件 
 		MapSelectPanel mapSelectPanel = new MapSelectPanel();
 		HelpPanel helpPanel = new HelpPanel();
-		GamePanel gamePanel = new GamePanel();
 		ModeSelectPanel modeSelectPanel = new ModeSelectPanel();
 		GameField gameFieldPanel = new GameField();
 
@@ -48,7 +45,6 @@ public class StartPanel extends JFrame {
 		cardPanel.add(mainPane, "mainPane");
 		cardPanel.add(mapSelectPanel, "mapSelectPanel");
 		cardPanel.add(helpPanel, "helpPanel");
-		cardPanel.add(gamePanel, "gamePanel");
 		cardPanel.add(modeSelectPanel, "modeSelectPanel");
 		cardPanel.add(gameFieldPanel, "gameFieldPanel");
 
@@ -86,7 +82,6 @@ public class StartPanel extends JFrame {
 		helpBt.setBorderPainted(false); 
 		helpBt.setBounds(400,334,163,49); 
 
-		//Button Help 监听     可与上面的合并。。。不想想了，在下面建一个自己的类  接口 &……明天再写
 		helpBt.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseExited(MouseEvent e) {
