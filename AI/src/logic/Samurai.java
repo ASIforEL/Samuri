@@ -1,6 +1,15 @@
 package logic;
 
-public class Samurai {
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.image.ImageObserver;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
+
+public abstract class Samurai {
 	private int homeX, homeY;			//澶ф湰钀?
 	private int curX, curY;					//鐜板湪鐨勪綅缃紝琛ㄧず涓哄湴鍥句笂鐨勫尯鍧梮琛寉鍒?
 	private int power;						//浣撳姏
@@ -12,10 +21,33 @@ public class Samurai {
 	private int weapon;						//姝﹀＋ID锛岀敤姝﹀櫒鏍囪瘑
 	private boolean isHit;
 	public Game game;
-
+	protected Image samuraiImg;
+	protected Image bloodImg;
+	private Image powerImg;
+	
+	protected int initBlood_X;
+	protected int initBlood_Y;
+	protected int initPower_X;
+	protected int initPower_Y;
+	
+	
 	public Samurai(){
 //		this.homeX = 0;
 //		this.homeY = 0;
+		//初始化时将blood和power的图片加载进去
+		try {
+			bloodImg = ImageIO.read(this.getClass().getResource("/cn/picture/A.png"));
+		} catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+		try {
+			powerImg = ImageIO.read(this.getClass().getResource("/cn/picture/A.png"));
+		} catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+		
 		this.curX = this.homeX;
 		this.curY = this.homeY;
 		this.power = 7;
@@ -582,6 +614,29 @@ public class Samurai {
 
 		System.exit(-1);
 		return false;	
+	}
+	
+	//绘制武士
+	public  abstract void drawSamurai(Graphics g,JPanel i);
+	//绘制血量
+	public abstract void drawBlood(Graphics g,JPanel i);
+	//绘制能量
+	public abstract void drawPower(Graphics g,JPanel i);
+	
+	/*
+	 *由于更新位置是一样的逻辑，则不用重写，直接继承即可 
+	 */
+	//更新Samurai的位置
+	public void updateSamurai(){
+		
+	}
+	//更新Blood
+	public void updateBlood(){
+		
+	}
+	//更新能量
+	public void updatePower(){
+		
 	}
 
 }

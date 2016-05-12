@@ -3,6 +3,8 @@ package cn.edu.nju.battlefield;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 
+import cn.edu.nju.panels.GameField;
+
 public class Test extends JFrame {
 	private GameField s = new GameField();
 	
