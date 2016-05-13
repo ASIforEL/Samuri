@@ -1,4 +1,4 @@
-package cn.edu.nju.panels;
+package cn.edu.nju.logic;
 
 import cn.edu.nju.logic.Game;
 
