@@ -49,8 +49,6 @@ public class GameSocket implements Runnable{
 					}
 				}else {
 					//做出对方所做的动作
-					game.action = rivalAction;
-					game.weapon = rivalSamurai;
 				}
 
 				//实现自己的操作及传输此信息给对方

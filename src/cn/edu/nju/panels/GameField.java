@@ -1,23 +1,21 @@
 package cn.edu.nju.panels;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.JPanel;
+import javax.swing.JLabel;
 
 import cn.edu.nju.logic.Configure;
-import cn.edu.nju.panels.MapSelectPanel;
 
-public class GameField extends JPanel {
+public class GameField extends BackGroundPanel{
 	
 	private static final long serialVersionUID = 1L;
 	// private JPanel JP;
 	// private JLabel back;
 	private BufferedImage grass;
-	private BufferedImage background;
-	
 	private BufferedImage homeOfCap;
 	private BufferedImage homeOfIronMan;
 	private BufferedImage mountain;
@@ -25,11 +23,47 @@ public class GameField extends JPanel {
 	private BufferedImage tree;
 	
 	public GameField() {
-		// TODO Auto-generated constructor stub
+		// TODO Auto-generated constructor stu
 
-		super();
-		this.setSize(960, 720);
-
+		JLabel lblCaptain = new JLabel("Captain");
+		lblCaptain.setForeground(Color.RED);
+		lblCaptain.setBounds(163, 43, 106, 81);
+		add(lblCaptain);
+		
+		JLabel lblIronman = new JLabel("Ironman");
+		lblIronman.setForeground(Color.RED);
+		lblIronman.setBounds(713, 43, 106, 81);
+		add(lblIronman);
+		
+		JLabel ironmanLabel = new JLabel("New label");
+		ironmanLabel.setForeground(Color.RED);
+		ironmanLabel.setBounds(743, 147, 36, 34);
+		add(ironmanLabel);
+		
+		JLabel widowLabel = new JLabel("New label");
+		widowLabel.setForeground(Color.RED);
+		widowLabel.setBounds(743, 191, 36, 34);
+		add(widowLabel);
+		
+		JLabel spidermanLabel = new JLabel("New label");
+		spidermanLabel.setForeground(Color.RED);
+		spidermanLabel.setBounds(743, 235, 36, 34);
+		add(spidermanLabel);
+		
+		JLabel label = new JLabel("New label");
+		label.setForeground(Color.RED);
+		label.setBounds(187, 147, 36, 34);
+		add(label);
+		
+		JLabel label_1 = new JLabel("New label");
+		label_1.setForeground(Color.RED);
+		label_1.setBounds(187, 191, 36, 34);
+		add(label_1);
+		
+		JLabel label_2 = new JLabel("New label");
+		label_2.setForeground(Color.RED);
+		label_2.setBounds(187, 235, 36, 34);
+		add(label_2);
 		initImag();
 
 
@@ -39,8 +73,6 @@ public class GameField extends JPanel {
 
 		try {
 			grass = ImageIO.read(this.getClass().getResource("/cn/picture/grass.png"));
-			background = ImageIO.read(this.getClass().getResource("/cn/picture/background1.jpg"));
-			
 			homeOfCap = ImageIO.read(this.getClass().getResource("/cn/picture/TeamCap.png"));
 			homeOfIronMan = ImageIO.read(this.getClass().getResource("/cn/picture/TeamIronMan.png"));
 			mountain = ImageIO.read(this.getClass().getResource("/cn/picture/mountain.png"));
@@ -51,16 +83,18 @@ public class GameField extends JPanel {
 		}
 	}
 
-	@Override
-	public void paint(Graphics g) {
-		// TODO Auto-generated method stub
-		// super.paint(g);
-		this.initMap(g);
-		this.repaint();
-	}
+
+	 @Override
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			this.initMap(g);
+			/*
+			new Samurai().drawBlood(g, this);
+			new Samurai().drawPower(g, this);
+			*/
+		}
 
 	public void initMap(Graphics g) {
-		g.drawImage(background, 0, 0, null);
 		for (int i = 0; i < 12; i++) {
 			for (int j = 0; j < 12; j++) {
 				Configure.map[i][j]=Configure.mapField[MapSelectPanel.numOfMap-1][i][j];

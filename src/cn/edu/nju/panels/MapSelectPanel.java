@@ -12,21 +12,22 @@ import javax.swing.SwingConstants;
 
 //��ͼѡ�����
 public class MapSelectPanel extends BackGroundPanel{
-	 
-	 ImageIcon mapJL[]=new ImageIcon[4];
-	 //�����ͼ�ĵ���
-	 public static int numOfMap=1;
-	 
-	 public MapSelectPanel() {
+
+	private static final long serialVersionUID = 1L;
+	ImageIcon mapJL[]=new ImageIcon[4];
+	//�����ͼ�ĵ���
+	public static int numOfMap=1;
+
+	public MapSelectPanel() {
 		setLayout(null);
-		
+
 		setSize(960,720);
 		setBackground(Color.black);
-		
+
 		JLabel title= new JLabel(new ImageIcon(this.getClass().getResource("/cn/picture/mapTitle.png")));
 		title.setBounds(50, 40, 390, 80);
 		add(title);
-		
+
 		for (int i = 1; i <= 4; i++) {
 			mapJL[i-1] = new ImageIcon(this.getClass().getResource("/cn/picture/map"+i+".png"));
 		}
@@ -34,7 +35,7 @@ public class MapSelectPanel extends BackGroundPanel{
 		mapLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		mapLabel.setBounds(130, 180, 703, 320);
 		add(mapLabel);
-		
+
 		JButton leftBt = new JButton(new ImageIcon(this.getClass().getResource("/cn/picture/left.png")));
 		leftBt.setContentAreaFilled(false);
 		leftBt.addMouseListener(new MouseAdapter() {
@@ -61,13 +62,13 @@ public class MapSelectPanel extends BackGroundPanel{
 					mapLabel.setIcon(mapJL[2]);
 					numOfMap=3;
 				}
-				
+
 			}
 		});
 		leftBt.setBounds(30, 310, 40, 80);
 		leftBt.setBorderPainted(false);
 		add(leftBt);
-		
+
 		JButton rightBt = new JButton(new ImageIcon(this.getClass().getResource("/cn/picture/right.png")));
 		rightBt.setContentAreaFilled(false);
 		rightBt.addMouseListener(new MouseAdapter() {
@@ -94,13 +95,13 @@ public class MapSelectPanel extends BackGroundPanel{
 					mapLabel.setIcon(mapJL[0]);
 					numOfMap=1;
 				}
-				
+
 			}
 		});
 		rightBt.setBounds(860, 310, 40, 80);
 		rightBt.setBorderPainted(false);
 		add(rightBt);		
-		
+
 		JButton nextBt = new JButton(new ImageIcon(this.getClass().getResource("/cn/picture/next.png")));
 		nextBt.setContentAreaFilled(false);
 		nextBt.addMouseListener(new MouseAdapter() {
@@ -113,7 +114,7 @@ public class MapSelectPanel extends BackGroundPanel{
 				nextBt.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/next.png")));
 			}
 			@Override
-			
+
 			//���next��ť֮���������ѡ�����
 			public void mouseClicked(MouseEvent e) {
 				//���next��ť֮���������ѡ�����
@@ -123,7 +124,7 @@ public class MapSelectPanel extends BackGroundPanel{
 		nextBt.setBounds(565, 550, 70, 70);
 		nextBt.setBorderPainted(false);
 		add(nextBt);
-		
+
 		JButton backBt = new JButton(new ImageIcon(this.getClass().getResource("/cn/picture/return.png")));
 		backBt.setContentAreaFilled(false);;
 		backBt.addMouseListener(new MouseAdapter() {
@@ -144,16 +145,16 @@ public class MapSelectPanel extends BackGroundPanel{
 		backBt.setBorderPainted(false);
 		add(backBt);
 	}
-	 
-	 @Override
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			/*
-			 *���Ի���Ѫ�������� 
+
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		/*
+		 *���Ի���Ѫ�������� 
 			new Samurai().drawBlood(g, this);
 			new Samurai().drawPower(g, this);
-			*/
-		}
+		 */
+	}
 
 }
 

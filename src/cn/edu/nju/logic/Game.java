@@ -1,23 +1,27 @@
 package cn.edu.nju.logic;
 
+import javax.swing.JOptionPane;
+
+import cn.edu.nju.panels.GameField;
 import cn.edu.nju.panels.MapSelectPanel;
 import cn.edu.nju.panels.StartPanel;
 
 public class Game {
-	public StartPanel startPanel;
-	
+	public GameField gameField;
+
 	public static final int PLAYER_NUM = 6;
-	public static final int turns = 1008;
-	public static final int maxCure = 24;			//the turns a samurai need to do actions again
+	public static final int TOTAL_TURNS = 1008;
+	public static Samurai[] samurais;
+	public int curTurn = 0;							//the current turn of the game
+	public int curSamuraiNum = 0;					//the current controlled samurai
 	public int side;								//group ID（0 represent TeamCap，1 represent TeamIronMan）
 	public int weapon;								//Samurai ID，indicated by the weapon number
-	public static Samurai[] samurais;
 	public int action;
 	int[][] map;
-	
+
 	public Game() {
 		map = Configure.mapField[MapSelectPanel.numOfMap];
-		
+
 		//the even number represents TeamCap, odd number represents TeamIronMan
 		samurais[0] = new CaptainAmerica();
 		samurais[1] = new IronMan();
@@ -27,15 +31,36 @@ public class Game {
 		samurais[5] = new SpiderMan();
 	}
 
-	public void execute() {		
-		samurais[weapon].doAction(this.action);
-		
+	public void execute() {
+		if (cheakWin() == true || curTurn == TOTAL_TURNS) {
+			//one side has won the game, output the promot & !!!stop the game!!!
+			int winSide = winSide();
+			String winner = "";
+			switch (winSide) {
+			case 0:winner = "TeamCap";break;
+			case 1:winner = "TeampIronMan";break;
+			}
+			JOptionPane.showMessageDialog(null, winner + "has won this game!");
+			//stop the game & back to the start UI
+			StartPanel.getCard().show(StartPanel.getCardPanel(), "mainPane");
+		}else {
+			//gaming
+			this.curSamuraiNum = turn2Samurai(curTurn);
+			samurais[curSamuraiNum].doAction(this.action);
+			curTurn++;
+			//repaint
+		}
+
 	}
-	
+
 	public void startGame() {
-		
+		curSamuraiNum = 0;
+		gameField.requestFocus();
+		Thread t = new Thread(new GameThread(this));
+		t.start();
+		System.out.println("Initializing the game");
 	}
-	
+
 	/**
 	 * check whether there is a side having been the winner
 	 * @return
@@ -56,10 +81,11 @@ public class Game {
 		if ((numOfDeadCap == PLAYER_NUM/2 && numOfDeadIronMan < PLAYER_NUM/2) ||
 				(numOfDeadIronMan == PLAYER_NUM/2 && numOfDeadCap < PLAYER_NUM/2)){
 			return true;
+		}else {
+			return false;
 		}
-		return false;
 	}
-	
+
 	/**
 	 * @return the winner group
 	 */
@@ -84,7 +110,7 @@ public class Game {
 		}
 		return -1;
 	}
-	
+
 	/**
 	 * to check whether there is a samurai existed or not
 	 * @param x
@@ -99,7 +125,7 @@ public class Game {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * to check whether there is a barrier or a transfer gateway
 	 * @param x
@@ -116,5 +142,9 @@ public class Game {
 		}else {
 			return false;
 		}
+	}
+
+	private int turn2Samurai(int curTurn) {
+		return curTurn % 6;
 	}
 }

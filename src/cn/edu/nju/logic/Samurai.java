@@ -23,7 +23,7 @@ public abstract class Samurai {
 
 	protected Image samuraiImg;
 	protected Image bloodImg;
-	private Image powerImg;
+	protected Image powerImg;
 	
 	protected int initBlood_X;
 	protected int initBlood_Y;
@@ -42,7 +42,7 @@ public abstract class Samurai {
 		Samurai.curY = this.homeY;
 		Samurai.hidden = false;
 		this.countrolled = false;
-		this.curPower = 7;
+		this.curPower = TOTAL_POWER;
 	}
 
 

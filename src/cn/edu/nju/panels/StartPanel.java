@@ -17,6 +17,8 @@ import javax.swing.JPanel;
 
 public class StartPanel extends JFrame {  
 
+	private static final long serialVersionUID = 1L;
+
 	private JLayeredPane mainPane;  
 	private JLabel background;  
 	private JButton startBt, helpBt;
@@ -144,7 +146,6 @@ public class StartPanel extends JFrame {
 		Toolkit tool=Toolkit.getDefaultToolkit();
 		Dimension dim = tool.getScreenSize();
 		int width=(int)dim.getWidth();
-		int height=(int)dim.getHeight();
 		this.setLocation((width-960)/2,3);  
 		this.setSize(960,720); 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  

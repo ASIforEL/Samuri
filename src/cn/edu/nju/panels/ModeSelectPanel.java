@@ -1,28 +1,24 @@
 package cn.edu.nju.panels;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-
-import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 
 public class ModeSelectPanel extends BackGroundPanel {
+	
+	private static final long serialVersionUID = 1L;
+	
 	static int team1hero=1;
 	static int team2hero=1;
 	ImageIcon hero1JL[]=new ImageIcon[3];
 	ImageIcon hero2JL[]=new ImageIcon[3];
 	ImageIcon hero1JL0[]=new ImageIcon[3];
 	ImageIcon hero2JL0[]=new ImageIcon[3];
+	
 	/**
 	 * Create the panel.
 	 */
@@ -204,7 +200,7 @@ public class ModeSelectPanel extends BackGroundPanel {
 				if(team2hero==1){
 					team2.setIcon(hero2JL[2]);
 					team2hero=3;
-				}else if(team1hero==2){
+				}else if(team2hero==2){
 					team2.setIcon(hero2JL[0]);	
 					team2hero=1;
 				}else if(team2hero==3){

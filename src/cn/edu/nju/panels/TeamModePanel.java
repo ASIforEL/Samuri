@@ -1,14 +1,16 @@
 package cn.edu.nju.panels;
 
 
-import javax.swing.JPanel;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 public class TeamModePanel extends JPanel {
+	
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create the panel.
