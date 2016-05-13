@@ -8,6 +8,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+import cn.edu.nju.logic.Game;
+
 public class ModeSelectPanel extends BackGroundPanel {
 	
 	private static final long serialVersionUID = 1L;

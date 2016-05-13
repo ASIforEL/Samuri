@@ -14,13 +14,13 @@ public class GameThread implements Runnable{
 	public void run() {
 		// TODO Auto-generated method stub
 		while (true) {
-			game.execute();
-//			try {
-//				Thread.sleep(game.snake.speed);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+			
+			try {
+				Thread.sleep(5);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 

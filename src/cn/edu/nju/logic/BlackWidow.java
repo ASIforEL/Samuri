@@ -2,36 +2,38 @@ package cn.edu.nju.logic;
 
 import java.awt.Graphics;
 
-import javax.swing.JPanel;
-
 public class BlackWidow extends Samurai{
 
 	
-	public BlackWidow() {
+	public BlackWidow(Game game) {
+		super(game);
 		setSide(1);
 		setWeapon(1);
 		setLifeSpan(2);
-		setDirection(Direction.EAST);
+		setDirection(Direction.WEST);
 
-		setHomeX(7);
-		setHomeY(12);
+		setHomeX(11);
+		setHomeY(6);
+		this.setCurX(this.getHomeX());
+		this.setCurY(this.getHomeY());
+		System.out.println("Initializing the BlackWidow");
+
+		samuraiField[getHomeX()][getHomeY()] = 55;
 	}
 
 	@Override
-	public void drawSamurai(Graphics g, JPanel i) {
+	public void drawBlood(Graphics g) {
 		// TODO Auto-generated method stub
-		
+		for (int i = 0; i < getLifeSpan(); i++) {
+			g.drawImage(bloodImg, (960-250-25)-i*40, 110, null);
+		}
 	}
 
 	@Override
-	public void drawBlood(Graphics g, JPanel i) {
+	public void drawPower(Graphics g) {
 		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawPower(Graphics g, JPanel i) {
-		// TODO Auto-generated method stub
-		
+		for (int i = 0; i < getPower(); i++) {
+			g.drawImage(powerImg,  (960-250-25)-i*30, 140, null);
+		}
 	}
 }

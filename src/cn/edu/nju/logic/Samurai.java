@@ -5,21 +5,22 @@ import java.awt.Image;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 
 public abstract class Samurai {
+	private static final int TOTAL_POWER = 7;
 	private int homeX, homeY;
-	public static int curX, curY;
-	public static Direction direction;
-	public static int lifespan;
-	public static boolean hidden;
-	public static int weapon;						//Samurai ID, indicated by the weapon number
+	public int curX, curY;
+	public Direction direction;
+	public int lifespan;
+	public boolean hidden;
+	public int weapon;							//Samurai ID, indicated by the weapon number
 	private boolean countrolled;
-	private int side;								//Group ID. 0 represents TeamCap，1 represents TeamIronMan
+	private int side;							//Group ID. 0 represents TeamCap，1 represents TeamIronMan
 	private int curPower;
-	private static final int TOTAL_POWER = 7;	
 	public Game game;
-	int[][] map = Configure.map;
+	int[][] samuraiField = Configure.samuraiField;
+	int[][] mapField = Configure.map;
 
 	protected Image samuraiImg;
 	protected Image bloodImg;
@@ -30,17 +31,16 @@ public abstract class Samurai {
 	protected int initPower_X;
 	protected int initPower_Y;
 	
-	public Samurai(){
+	public Samurai(Game game){
 		try {
-			bloodImg = ImageIO.read(this.getClass().getResource("/cn/picture/A.png"));
-			powerImg = ImageIO.read(this.getClass().getResource("/cn/picture/A.png"));
+			bloodImg = ImageIO.read(this.getClass().getResource("/cn/picture/blood.png"));
+			powerImg = ImageIO.read(this.getClass().getResource("/cn/picture/power.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		Samurai.curX = this.homeX;
-		Samurai.curY = this.homeY;
-		Samurai.hidden = false;
+		this.game = game;
+		this.hidden = false;
 		this.countrolled = false;
 		this.curPower = TOTAL_POWER;
 	}
@@ -60,23 +60,23 @@ public abstract class Samurai {
 	}
 
 	public int getCurX() {
-		return Samurai.curX;
+		return this.curX;
 	}
 
 	public int getCurY() {
-		return Samurai.curY;
+		return this.curY;
 	}
 
 	public Direction getDirection() {
-		return Samurai.direction;
+		return this.direction;
 	}
 
 	public int getLifeSpan() {
-		return Samurai.lifespan;
+		return this.lifespan;
 	}
 
 	public boolean getHidden() {
-		return Samurai.hidden;
+		return this.hidden;
 	}
 
 	public int getSide() {
@@ -84,7 +84,7 @@ public abstract class Samurai {
 	}
 	
 	public int getWeapon() {
-		return Samurai.weapon;
+		return this.weapon;
 	}
 
 	public boolean getControled() {
@@ -104,23 +104,23 @@ public abstract class Samurai {
 	}
 
 	public void setCurX(int info) {
-		Samurai.curX = info;
+		this.curX = info;
 	}
 
 	public void setCurY(int info) {
-		Samurai.curY = info;
+		this.curY = info;
 	}
 
 	public Direction setDirection(Direction info) {
-		return Samurai.direction = info;
+		return this.direction = info;
 	}
 
 	public void setLifeSpan(int info){
-		Samurai.lifespan = info;
+		this.lifespan = info;
 	}
 
 	public void setHidden(boolean info) {
-		Samurai.hidden = info;
+		this.hidden = info;
 	}
 
 	public void setSide(int info) {
@@ -128,7 +128,7 @@ public abstract class Samurai {
 	}
 
 	public void setWeapon(int info) {
-		Samurai.weapon = info;
+		this.weapon = info;
 	}
 
 	public void setCountroled(boolean info) {
@@ -142,41 +142,53 @@ public abstract class Samurai {
 	 * @return whether the samurai is killed or not
 	 */
 	public boolean isKilled() {
-		return Samurai.lifespan == 0;
+		return this.lifespan == 0;
 	}
 
 	/**
 	 * do the action actually
 	 */
 	public void doAction(int action) {
-		assert this.isValid(action);
+		if (this.isValid(action) == true) {
+			//it can do this action
+			if (action >= 1 && action <= 4){
+				this.rotate(action);
+				moveForward();
+				this.curPower -= 2;
 
-		if (action >= 1 && action <= 4){
-			this.rotate(action);
-			moveForward();
-			this.curPower -= 2;
-			
-			int value = map[this.getCurX()][this.getCurY()];
-			if (value == Configure.TRANS1 || value == Configure.TRANS2 || value == Configure.TRANS3 || 
-					value == Configure.TRANS4 || value == Configure.TRANS5 || value == Configure.TRANS6) {
-				transfer();
+				int value = mapField[this.getCurX()][this.getCurY()];
+				if (value == Configure.TRANS1 || value == Configure.TRANS2 || value == Configure.TRANS3 || 
+						value == Configure.TRANS4 || value == Configure.TRANS5 || value == Configure.TRANS6) {
+					transfer();
+				}
+			}
+
+			if (action == 6){
+				this.hidden = true;
+				this.curPower -= 1;
+			}
+
+			if (action == 7){
+				this.hidden = false;
+				this.curPower -= 1;
+			}
+
+			if (action == 11 || action == 12 || action == 13 || action == 14 || action == 15 || action == 16 || action == 17) {
+				hit(this.getHittenSamurai(action));
+				this.curPower -= 3;
+			}else {
+				//it can not do this action
+				switch (action) {
+				case 1|2|3|4:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
+				case 5:JOptionPane.showMessageDialog(null, "You cannot hide!");break;
+				case 6:JOptionPane.showMessageDialog(null, "You cannot show!");break;
+				case 11|12|13|14|15|16|17:JOptionPane.showMessageDialog(null, "You cannot hit this one!");break;
+				}
+				
 			}
 		}
+
 		
-		if (action == 6){
-			Samurai.hidden = true;
-			this.curPower -= 1;
-		}
-		
-		if (action == 7){
-			Samurai.hidden = false;
-			this.curPower -= 1;
-		}
-		
-		if (action == 11 || action == 12 || action == 13 || action == 14 || action == 15 || action == 16 || action == 17) {
-			hit(this.getHittenSamurai(action));
-			this.curPower -= 3;
-		}
 	}
 
 	/**
@@ -185,10 +197,10 @@ public abstract class Samurai {
 	 */
 	private void rotate(int action){
 		switch (action) {
-		case 1:Samurai.direction = Direction.WEST;break;
-		case 2:Samurai.direction = Direction.EAST;break;
-		case 3:Samurai.direction = Direction.NORTH;break;
-		case 4:Samurai.direction = Direction.SOUTH;break;
+		case 1:this.direction = Direction.WEST;break;
+		case 2:this.direction = Direction.EAST;break;
+		case 3:this.direction = Direction.NORTH;break;
+		case 4:this.direction = Direction.SOUTH;break;
 		}
 		
 //		/*
@@ -244,7 +256,7 @@ public abstract class Samurai {
 	 * deliver it to another gateway accordingly
 	 */
 	private void transfer() {
-		int value = map[this.getCurX()][this.getCurY()];
+		int value = mapField[this.getCurX()][this.getCurY()];
 		
 		switch (value) {
 		case Configure.TRANS1:setCurX(9);setCurY(11);break;
@@ -259,11 +271,13 @@ public abstract class Samurai {
 	}
 
 	/**
-	 * if hitted, lifespan - 1 
+	 * if hitted, lifespan - 1 & go back to its home
 	 */
 	private void hit(Samurai hittenSamurai) {
 		if (hittenSamurai != null) {
 			this.setLifeSpan(this.getLifeSpan() - 1);
+			setCurX(this.homeX);
+			setCurY(this.homeY);
 		}
 	}
 
@@ -322,7 +336,7 @@ public abstract class Samurai {
 				}else {
 					//it is hidden, but it cannot show if there is a samurai, which is not hidden, in the block
 					for (int i = 0; i < Game.PLAYER_NUM; ++i){
-						Samurai other = Game.samurais[i];
+						Samurai other = game.samurais[i];
 						if (other.getHidden() == false && 
 								(other.getCurX() == curX && other.getCurY() == curY)){
 							resume(preX, preY, preDirection, preHidden);
@@ -384,8 +398,10 @@ public abstract class Samurai {
 
 		//samurai can move to a block which has already a samurai existed if it's hidden
 		for (int i = 0; i < Game.PLAYER_NUM; i++){
-			if ((this.getCurX() == Game.samurais[i].getCurX() &&
-					this.getCurY() == Game.samurais[i].getCurY())){
+			if ((this.getCurX() == game.samurais[i].getCurX() &&
+					this.getCurY() == game.samurais[i].getCurY()) && 
+					this.getWeapon() != game.samurais[i].getWeapon() && 
+					this.getSide() != game.samurais[i].getSide()){
 				if (this.getHidden() == true) {
 					return true;
 				}
@@ -395,7 +411,7 @@ public abstract class Samurai {
 			}
 		}
 
-		int value = map[this.getCurX()][this.getCurX()];
+		int value = mapField[this.getCurX()][this.getCurX()];
 		//can't move to other samurais' home
 		if (value == Configure.HOMEOFCAP || value == Configure.HOMEOFIRONMAN) {
 			return false;
@@ -409,7 +425,7 @@ public abstract class Samurai {
 				value == Configure.TRANS4 || value == Configure.TRANS5 || value == Configure.TRANS6 || 
 				value == Configure.TRANS7 || value == Configure.TRANS8) {
 			boolean result = false;
-			if (value == Configure.TRANS1 && Samurai.direction == Direction.WEST) {
+			if (value == Configure.TRANS1 && this.direction == Direction.WEST) {
 				setCurX(9);
 				setCurY(11);
 				if (isValid(1)) {
@@ -418,7 +434,7 @@ public abstract class Samurai {
 					result = false;
 				}	
 			}
-			if (value == Configure.TRANS2 && Samurai.direction == Direction.EAST) {
+			if (value == Configure.TRANS2 && this.direction == Direction.EAST) {
 				setCurX(3);
 				setCurY(1);
 				if (isValid(2)) {
@@ -427,7 +443,7 @@ public abstract class Samurai {
 					result = false;
 				}
 			}
-			if (value == Configure.TRANS3 && Samurai.direction == Direction.WEST) {
+			if (value == Configure.TRANS3 && this.direction == Direction.WEST) {
 				setCurX(8);
 				setCurY(1);
 				if (isValid(1)) {
@@ -436,7 +452,7 @@ public abstract class Samurai {
 					result = false;
 				}
 			}
-			if (value == Configure.TRANS4 && Samurai.direction == Direction.EAST) {
+			if (value == Configure.TRANS4 && this.direction == Direction.EAST) {
 				setCurX(2);
 				setCurY(11);
 				if (isValid(2)) {
@@ -445,7 +461,7 @@ public abstract class Samurai {
 					result = false;
 				}
 			}
-			if (value == Configure.TRANS5 && Samurai.direction == Direction.NORTH) {
+			if (value == Configure.TRANS5 && this.direction == Direction.NORTH) {
 				setCurX(6);
 				setCurY(8);
 				setDirection(Direction.EAST);
@@ -455,7 +471,7 @@ public abstract class Samurai {
 					result = false;
 				}
 			}
-			if (value == Configure.TRANS6 && Samurai.direction == Direction.WEST) {
+			if (value == Configure.TRANS6 && this.direction == Direction.WEST) {
 				setCurX(5);
 				setCurY(7);
 				setDirection(Direction.SOUTH);
@@ -465,7 +481,7 @@ public abstract class Samurai {
 					result = false;
 				}
 			}
-			if (value == Configure.TRANS7 && Samurai.direction == Direction.SOUTH) {
+			if (value == Configure.TRANS7 && this.direction == Direction.SOUTH) {
 				setCurX(9);
 				setCurY(6);
 				setDirection(Direction.WEST);
@@ -475,7 +491,7 @@ public abstract class Samurai {
 					result = false;
 				}
 			}
-			if (value == Configure.TRANS8 && Samurai.direction == Direction.EAST) {
+			if (value == Configure.TRANS8 && this.direction == Direction.EAST) {
 				setCurX(4);
 				setCurY(8);
 				setDirection(Direction.NORTH);
@@ -496,7 +512,7 @@ public abstract class Samurai {
 	 * @return
 	 */
 	private boolean canHit(Samurai hittenSamurai) {
-		int myWeapon = Samurai.weapon;
+		int myWeapon = this.weapon;
 		int x1 = this.getCurX();
 		int y1 = this.getCurY();
 		int x2 = hittenSamurai.getCurX();
@@ -579,7 +595,7 @@ public abstract class Samurai {
 	 * @return the hittenSamurai reference
 	 */
 	private Samurai getHittenSamurai(int action) {
-		int myWeapon = Samurai.weapon;
+		int myWeapon = this.weapon;
 		if (action == 11) {
 			switch (myWeapon) {
 			case 0:return this.hittenSamuraiOf0(action);
@@ -628,7 +644,7 @@ public abstract class Samurai {
 	 */
 	private Samurai hittenSamuraiOf0(int action) {
 		Samurai hittenSamurai = null;
-		Direction thisDirection = Samurai.direction;
+		Direction thisDirection = this.direction;
 		switch (thisDirection) {
 		case WEST:hittenSamurai = game.isSamurai(getWest(action -10).getX(), getWest(action - 10).getY());
 		case EAST:hittenSamurai = game.isSamurai(getEast(action -10).getX(), getEast(action - 10).getY());
@@ -644,7 +660,7 @@ public abstract class Samurai {
 
 	private Samurai hittenSamurai11Of2() {
 		Samurai hittenSamurai = null;
-		Direction thisDirection = Samurai.direction;
+		Direction thisDirection = this.direction;
 		switch (thisDirection) {
 		case WEST:hittenSamurai = game.isSamurai(getNorthEast(1).getX(), getNorthEast(1).getY());
 		case EAST:hittenSamurai = game.isSamurai(getSouthWest(1).getX(), getSouthWest(1).getY());
@@ -660,7 +676,7 @@ public abstract class Samurai {
 
 	private Samurai hittenSamurai12Of2() {
 		Samurai hittenSamurai = null;
-		Direction thisDirection = Samurai.direction;
+		Direction thisDirection = this.direction;
 		switch (thisDirection) {
 		case WEST:hittenSamurai = game.isSamurai(getNorth(1).getX(), getNorth(1).getY());
 		case EAST:hittenSamurai = game.isSamurai(getSouth(1).getX(), getSouth(1).getY());
@@ -672,7 +688,7 @@ public abstract class Samurai {
 
 	private Samurai hittenSamurai13Of1() {
 		Samurai hittenSamurai = null;
-		Direction thisDirection = Samurai.direction;
+		Direction thisDirection = this.direction;
 		switch (thisDirection) {
 		case WEST:hittenSamurai = game.isSamurai(getSouthWest(1).getX(),getSouthWest(1).getY());
 		case EAST:hittenSamurai = game.isSamurai(getNorthEast(1).getX(), getNorthEast(1).getY());
@@ -685,7 +701,7 @@ public abstract class Samurai {
 
 	private Samurai hittenSamurai13Of2() {
 		Samurai hittenSamurai = null;
-		Direction thisDirection = Samurai.direction;
+		Direction thisDirection = this.direction;
 		switch (thisDirection) {
 		case WEST:hittenSamurai = game.isSamurai(getNorthWest(1).getX(),getNorthWest(1).getY());
 		case EAST:hittenSamurai = game.isSamurai(getSouthEast(1).getX(),getSouthEast(1).getY());
@@ -697,7 +713,7 @@ public abstract class Samurai {
 
 	private Samurai hittenSamurai14Of1() {
 		Samurai hittenSamurai = null;
-		Direction thisDirection = Samurai.direction;
+		Direction thisDirection = this.direction;
 		switch (thisDirection) {
 		case WEST:hittenSamurai = game.isSamurai(getSouth(1).getX(), getSouth(1).getY());
 		case EAST:hittenSamurai = game.isSamurai(getNorth(1).getX(), getNorth(1).getY());
@@ -713,7 +729,7 @@ public abstract class Samurai {
 
 	private Samurai hittenSamurai15Of1() {
 		Samurai hittenSamurai = null;
-		Direction thisDirection = Samurai.direction;
+		Direction thisDirection = this.direction;
 		switch (thisDirection) {
 		case WEST:hittenSamurai = game.isSamurai(getSouth(2).getX(), getSouth(2).getY());
 		case EAST:hittenSamurai = game.isSamurai(getNorth(2).getX(), getNorth(2).getY());
@@ -733,7 +749,7 @@ public abstract class Samurai {
 
 	private Samurai hittenSamurai17Of2() {
 		Samurai hittenSamurai = null;
-		Direction thisDirection = Samurai.direction;
+		Direction thisDirection = this.direction;
 		switch (thisDirection) {
 		case WEST:hittenSamurai = game.isSamurai(getSouthEast(1).getX(), getSouthEast(1).getY());
 		case EAST:hittenSamurai = game.isSamurai(getNorthWest(1).getX(), getNorthWest(1).getY());
@@ -782,21 +798,20 @@ public abstract class Samurai {
 		return new Point(this.getCurX() - offset, this.getCurY() + offset);
 	}
 
-	public  abstract void drawSamurai(Graphics g,JPanel i);
-	public abstract void drawBlood(Graphics g,JPanel i);
-	public abstract void drawPower(Graphics g,JPanel i);
+	public abstract void drawBlood(Graphics g);
+	public abstract void drawPower(Graphics g);
 
 	/**
 	 * update the informations of this samurai
 	 */
 	public void updateSamurai(){
-		
+
 	}
-	
+
 	public void updateBlood(){
-		
+
 	}
-	
+
 	public void updatePower(){
 		setPower();
 	}

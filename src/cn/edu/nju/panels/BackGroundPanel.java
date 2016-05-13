@@ -22,7 +22,6 @@ public class BackGroundPanel extends JPanel {
 		try {
 			img = ImageIO.read(getClass().getResource("/cn/picture/background1.jpg"));
 		} catch (IOException e) {
-			// TODO �Զ����ɵ� catch ��
 			e.printStackTrace();
 		}
 		super.paintComponent(g);

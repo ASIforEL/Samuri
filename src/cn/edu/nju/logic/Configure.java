@@ -18,6 +18,21 @@ public class Configure {
 	public static final int TREE=4;
 	public static final int HOMEOFCAP=5;
 	public static final int HOMEOFIRONMAN=6;
+	public static int[][] samuraiField=new int[][]{
+		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,0},
+	};
+	
 	public static int[][] map=new int[12][12];
 	public static int[][][] mapField=new int[][][]{
 		{

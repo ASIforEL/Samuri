@@ -7,32 +7,55 @@ import cn.edu.nju.panels.MapSelectPanel;
 import cn.edu.nju.panels.StartPanel;
 
 public class Game {
-	public GameField gameField;
-
 	public static final int PLAYER_NUM = 6;
 	public static final int TOTAL_TURNS = 1008;
-	public static Samurai[] samurais;
+	
+	public Samurai[] samurais = new Samurai[6];
+	public GameField gameField;
+
 	public int curTurn = 0;							//the current turn of the game
 	public int curSamuraiNum = 0;					//the current controlled samurai
 	public int side;								//group ID（0 represent TeamCap，1 represent TeamIronMan）
 	public int weapon;								//Samurai ID，indicated by the weapon number
-	public int action;
-	int[][] map;
-
-	public Game() {
-		map = Configure.mapField[MapSelectPanel.numOfMap];
-
+	public int[][] map;
+	public int[][] samuraiField;
+	
+	public Game(GameField gameField) {
+		this.gameField = gameField;
+		
+		map = Configure.mapField[MapSelectPanel.numOfMap - 1];
+//		map = Configure.mapField[1];
+		
+		samuraiField = Configure.samuraiField;
+		
 		//the even number represents TeamCap, odd number represents TeamIronMan
-		samurais[0] = new CaptainAmerica();
-		samurais[1] = new IronMan();
-		samurais[2] = new Hulk();
-		samurais[3] = new BlackWidow();
-		samurais[4] = new Hawkeye();
-		samurais[5] = new SpiderMan();
+		//initialize them in their run order
+		samurais[0] = new CaptainAmerica(this);
+		samurais[1] = new IronMan(this);
+		samurais[2] = new Hulk(this);
+		samurais[3] = new BlackWidow(this);
+		samurais[4] = new Hawkeye(this);
+		samurais[5] = new SpiderMan(this);
+		
+		samurais[0].mapField = this.map;
+		samurais[1].mapField = this.map;
+		samurais[2].mapField = this.map;
+		samurais[3].mapField = this.map;
+		samurais[4].mapField = this.map;
+		samurais[5].mapField = this.map;
+		
+		samurais[0].samuraiField = this.samuraiField;
+		samurais[1].samuraiField = this.samuraiField;
+		samurais[2].samuraiField = this.samuraiField;
+		samurais[3].samuraiField = this.samuraiField;
+		samurais[4].samuraiField = this.samuraiField;
+		samurais[5].samuraiField = this.samuraiField;
+		
+		System.out.println("Finish Initializing the game");
 	}
 
-	public void execute() {
-		if (cheakWin() == true || curTurn == TOTAL_TURNS) {
+	public void execute(int action) {
+		if (cheakWin() == true && curTurn != TOTAL_TURNS) {
 			//one side has won the game, output the promot & !!!stop the game!!!
 			int winSide = winSide();
 			String winner = "";
@@ -43,11 +66,18 @@ public class Game {
 			JOptionPane.showMessageDialog(null, winner + "has won this game!");
 			//stop the game & back to the start UI
 			StartPanel.getCard().show(StartPanel.getCardPanel(), "mainPane");
+		}else if (curTurn == TOTAL_TURNS && cheakWin() == false) {
+			JOptionPane.showMessageDialog(null, "No one wins this game!");
+			//stop the game & back to the start UI
+			StartPanel.getCard().show(StartPanel.getCardPanel(), "mainPane");
 		}else {
 			//gaming
 			this.curSamuraiNum = turn2Samurai(curTurn);
-			samurais[curSamuraiNum].doAction(this.action);
-			curTurn++;
+			samurais[curSamuraiNum].doAction(action);
+			System.out.println(curTurn);
+			System.out.println(samurais[curSamuraiNum].getCurX());
+			System.out.println(samurais[curSamuraiNum].getCurY());
+			System.out.println();
 			//repaint
 		}
 
@@ -55,10 +85,10 @@ public class Game {
 
 	public void startGame() {
 		curSamuraiNum = 0;
-		gameField.requestFocus();
+//		gameField.requestFocus();
 		Thread t = new Thread(new GameThread(this));
 		t.start();
-		System.out.println("Initializing the game");
+		System.out.println("Start the game");
 	}
 
 	/**
@@ -144,7 +174,25 @@ public class Game {
 		}
 	}
 
+	/**
+	 * get the current Samurai based on the current turn
+	 * @param curTurn
+	 * @return curSamuraiNum
+	 */
 	private int turn2Samurai(int curTurn) {
 		return curTurn % 6;
+	}
+	
+	/**
+	 * 
+	 * @param input
+	 * @return actual actions in the way of String, spaced by the " "
+	 */
+	public String getAction(String input) {
+		String inputActions = "";
+		if (input.startsWith("# ")) {
+			inputActions = input.substring(2, input.length());
+		}
+		return inputActions;
 	}
 }

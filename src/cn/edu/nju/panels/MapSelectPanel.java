@@ -15,7 +15,7 @@ public class MapSelectPanel extends BackGroundPanel{
 
 	private static final long serialVersionUID = 1L;
 	ImageIcon mapJL[]=new ImageIcon[4];
-	//�����ͼ�ĵ���
+
 	public static int numOfMap=1;
 
 	public MapSelectPanel() {

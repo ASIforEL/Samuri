@@ -6,13 +6,13 @@ sideOfCap=5;//cap
 sideOfIronMan =6 ;//IronMan
 
 
-SAMURAI
-hero1OfCap =22;//cap队hero1在二维数组中对应的标示符
-hero2OfCap =33;//cap队hero2在二维数组中对应的标示符
-hero3OfCap =44;//cap队hero3在二维数组中对应的标示符
-hero1OfIronMan =55;//IronMan队hero1在二维数组中对应的标示符
-hero2OfIronMan = 66;//IronMan队hero2在二维数组中对应的标示符
-hero3OfIronMan =77;//IronMan队hero3在二维数组中对应的标示符
+SAMURAI:
+hero1OfCap =11;//cap队hero1在二维数组中对应的标示符
+hero2OfCap =22;//cap队hero2在二维数组中对应的标示符
+hero3OfCap =33;//cap队hero3在二维数组中对应的标示符
+hero1OfIronMan =44;//IronMan队hero1在二维数组中对应的标示符
+hero2OfIronMan =55;//IronMan队hero2在二维数组中对应的标示符
+hero3OfIronMan =66;//IronMan队hero3在二维数组中对应的标示符
 
 
 BLOCK:

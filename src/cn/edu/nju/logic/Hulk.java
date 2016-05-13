@@ -2,36 +2,38 @@ package cn.edu.nju.logic;
 
 import java.awt.Graphics;
 
-import javax.swing.JPanel;
-
 public class Hulk extends Samurai{
 
 	
-	public Hulk() {
+	public Hulk(Game game) {
+		super(game);
 		setSide(0);
 		setWeapon(1);
 		setLifeSpan(4);
-		setDirection(Direction.WEST);
+		setDirection(Direction.EAST);
 		
-		setHomeX(6);
-		setHomeY(1);
+		setHomeX(0);
+		setHomeY(5);
+		this.setCurX(this.getHomeX());
+		this.setCurY(this.getHomeY());
+		System.out.println("Initializing the Hulk");
+
+		samuraiField[getHomeX()][getHomeY()] = 22;
 	}
 
 	@Override
-	public void drawSamurai(Graphics g, JPanel i) {
+	public void drawBlood(Graphics g) {
 		// TODO Auto-generated method stub
-		
+		for (int i = 0; i < getLifeSpan(); i++) {
+			g.drawImage(bloodImg, 250+i*40, 110, null);
+		}
 	}
 
 	@Override
-	public void drawBlood(Graphics g, JPanel i) {
+	public void drawPower(Graphics g) {
 		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawPower(Graphics g, JPanel i) {
-		// TODO Auto-generated method stub
-		
+		for (int i = 0; i < getPower(); i++) {
+			g.drawImage(powerImg, 250+i*30, 140, null);
+		}
 	}
 }

@@ -1,9 +1,12 @@
 package cn.edu.nju.logic;
 
-public class MainTest {
+import cn.edu.nju.panels.GameField;
 
+public class MainTest {	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		GameField gameField = new GameField();
+		Game game = gameField.game;
+		game.startGame();
 
 		
 	}
