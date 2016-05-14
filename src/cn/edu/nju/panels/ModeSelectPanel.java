@@ -1,26 +1,33 @@
 package cn.edu.nju.panels;
 
-import java.awt.Graphics;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+
+import cn.edu.nju.panels.*;
+
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 
-import cn.edu.nju.logic.Game;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class ModeSelectPanel extends BackGroundPanel {
-	
-	private static final long serialVersionUID = 1L;
-	
 	static int team1hero=1;
 	static int team2hero=1;
 	ImageIcon hero1JL[]=new ImageIcon[3];
 	ImageIcon hero2JL[]=new ImageIcon[3];
 	ImageIcon hero1JL0[]=new ImageIcon[3];
 	ImageIcon hero2JL0[]=new ImageIcon[3];
-	
 	/**
 	 * Create the panel.
 	 */
@@ -39,8 +46,11 @@ public class ModeSelectPanel extends BackGroundPanel {
 		btnFight.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				StartPanel.getCard().show(StartPanel.getCardPanel(), "gameFieldPanel");
-			}
+	/////////if you get it£¬   				StartPanel.getCard().show(StartPanel.getCardPanel(), "gameFieldPanel");
+//if not .... how to dispose the fore Frame......
+				new GameFrame();
+					
+				}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -63,13 +73,25 @@ public class ModeSelectPanel extends BackGroundPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				StartPanel.getCard().show(StartPanel.getCardPanel(), "mapSelectPanel");
+				requestFocus(true);
+				addKeyListener(new KeyAdapter()
+				{
+				public void keyPressed(KeyEvent e)
+				{
+				System.out.println("ÊµÏÖ¼àÌý");
+				 if(e.getKeyCode()==KeyEvent.VK_UP){
+				    System.out.println("up");
+				 }
+				}
+				});
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
 			
 				btnBack.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/return2.png")));
-				}
+				
+			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {

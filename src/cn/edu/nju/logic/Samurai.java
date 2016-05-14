@@ -7,8 +7,11 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
+import cn.edu.nju.panels.GameField;
+
 public abstract class Samurai {
 	private static final int TOTAL_POWER = 7;
+	private static String powerInfo;
 	private int homeX, homeY;
 	public int curX, curY;
 	public Direction direction;
@@ -41,6 +44,8 @@ public abstract class Samurai {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		Samurai.powerInfo = "";
 		
 		this.game = game;
 		this.hidden = false;
@@ -93,6 +98,10 @@ public abstract class Samurai {
 	public boolean getControled() {
 		return this.countrolled;
 	}
+	
+	public String getPowerInfo() {
+		return Samurai.powerInfo;
+	}
 
 	public void setHomeX(int info) {
 		this.homeX = info;
@@ -137,6 +146,10 @@ public abstract class Samurai {
 	public void setCountroled(boolean info) {
 		this.countrolled = info;
 	}
+	
+	public void setPowerInfo(String info) {
+		Samurai.powerInfo = info;
+	}
 
 
 
@@ -154,6 +167,12 @@ public abstract class Samurai {
 	public void doAction(int action) {
 		if (this.isValid(action) == true) {
 			//it can do this action
+			if (action == 0) {
+				this.setCountroled(false);
+				updatePower();
+				GameField.curTurn++;
+			}
+			
 			if (action >= 1 && action <= 4){
 				int preX = this.getCurX();
 				int preY = this.getCurY();
@@ -162,7 +181,7 @@ public abstract class Samurai {
 				moveForward();
 				this.curPower -= 2;
 
-				int value = mapField[this.getCurX()][this.getCurY()];
+				int value = mapField[this.getCurY()][this.getCurX()];
 				if (value == Configure.TRANS1 || value == Configure.TRANS2 || value == Configure.TRANS3 || 
 						value == Configure.TRANS4 || value == Configure.TRANS5 || value == Configure.TRANS6) {
 					transfer();
@@ -182,17 +201,47 @@ public abstract class Samurai {
 				this.curPower -= 1;
 			}
 
-			if (action == 11 || action == 12 || action == 13 || action == 14 || action == 15 || action == 16 || action == 17) {
-				hit(this.getHittenSamurai(action));
+			if (action == 10) {
+				switch (this.weapon) {
+				case 0:
+					for (int i = 11; i <= 13; i++) {
+						if (canHit(getHittenSamurai(i))) {
+							hit(getHittenSamurai(i));
+						}
+					}break;
+		
+				case 1:
+					for (int i = 11; i <= 15; i++) {
+						if (canHit(getHittenSamurai(i))) {
+							hit(getHittenSamurai(i));
+						}
+					}break;
+
+				case 2:
+					for (int i = 11; i <= 17; i++) {
+						if (canHit(getHittenSamurai(i))) {
+							hit(getHittenSamurai(i));
+						}
+					}break;
+				}
 				this.curPower -= 3;
 			}
 		}else {
 			//it can not do this action
-			switch (action) {
-			case 1|2|3|4:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
-			case 5:JOptionPane.showMessageDialog(null, "You cannot hide!");break;
-			case 6:JOptionPane.showMessageDialog(null, "You cannot show!");break;
-			case 11|12|13|14|15|16|17:JOptionPane.showMessageDialog(null, "You cannot hit this one!");break;
+			if (this.getPowerInfo() != "") {
+				JOptionPane.showMessageDialog(null, this.getPowerInfo());
+				this.setPowerInfo("");
+			}else {
+				switch (action) {
+				case 1:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
+				case 2:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
+				case 3:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
+				case 4:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
+				case 6:JOptionPane.showMessageDialog(null, "You cannot hide!");break;
+				case 7:JOptionPane.showMessageDialog(null, "You cannot show!");break;
+				case 10:JOptionPane.showMessageDialog(null, "You cannot hit this region!");break;
+			}
+			
 			}
 		}	
 	}
@@ -447,7 +496,7 @@ public abstract class Samurai {
 	 * deliver it to another gateway accordingly
 	 */
 	private void transfer() {
-		int value = mapField[this.getCurX()][this.getCurY()];
+		int value = mapField[this.getCurY()][this.getCurX()];
 		
 		switch (value) {
 		case Configure.TRANS1:setCurX(9);setCurY(11);break;
@@ -485,9 +534,14 @@ public abstract class Samurai {
 		Direction preDirection = this.getDirection();
 		boolean preHidden = this.getHidden();
 
-		if (action >= 0 && action <= 4){
+		if (action == 0) {
+			return true;
+		}
+		
+		if (action >= 1 && action <= 4){
 			//check it has enough power to do the action
 			if (this.getPower() < NeededPower.MOVE) {
+				this.setPowerInfo("You have not enough power to execute this action!");
 				return false;
 			}else{
 				if (canMove(action) == true) {
@@ -503,6 +557,7 @@ public abstract class Samurai {
 		if (action == 6){
 			//check it has enough power to do the action
 			if (this.getPower() < NeededPower.HIDE) {
+				this.setPowerInfo("You have not enough power to execute this action!");
 				return false;
 			}else {
 				if (this.getHidden() == true){
@@ -518,6 +573,7 @@ public abstract class Samurai {
 		if (action == 7){
 			//check it has enough power to do the action
 			if (this.getPower() < NeededPower.SHOW) {
+				this.setPowerInfo("You have not enough power to execute this action!");
 				return false;
 			}else{
 				if (this.getHidden() == false){
@@ -542,17 +598,40 @@ public abstract class Samurai {
 
 		}
 
-		if (action == 11 || action == 12 || action == 13 || action == 14 || action == 15 || action == 16 || action == 17) {
+		if (action == 10) {
 			//check it has enough power to do the action
 			if (this.getPower() < NeededPower.ATTACK) {
+				this.setPowerInfo("You have not enough power to execute this action!");
 				return false;
 			}else {
-				if (canHit(getHittenSamurai(action))) {
-					resume(preX, preY, preDirection, preHidden);
-					return true;
-				}else {
-					resume(preX, preY, preDirection, preHidden);
-					return false;
+				switch (this.weapon) {
+				case 0:
+					if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13))) {
+						resume(preX, preY, preDirection, preHidden);
+						return true;
+					}else {
+						resume(preX, preY, preDirection, preHidden);
+						return false;
+					}
+				case 1:
+					if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13)) || 
+							canHit(getHittenSamurai(14)) || canHit(getHittenSamurai(15))) {
+						resume(preX, preY, preDirection, preHidden);
+						return true;
+					}else {
+						resume(preX, preY, preDirection, preHidden);
+						return false;
+					}
+				case 2:
+					if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13)) || 
+							canHit(getHittenSamurai(14)) || canHit(getHittenSamurai(15)) || 
+							canHit(getHittenSamurai(16)) || canHit(getHittenSamurai(17))) {
+						resume(preX, preY, preDirection, preHidden);
+						return true;
+					}else {
+						resume(preX, preY, preDirection, preHidden);
+						return false;
+					}
 				}
 			}
 		}
@@ -590,19 +669,24 @@ public abstract class Samurai {
 		//samurai can move to a block which has already a samurai existed if it's hidden
 		for (int i = 0; i < Game.PLAYER_NUM; i++){
 			if ((this.getCurX() == game.samurais[i].getCurX() &&
-					this.getCurY() == game.samurais[i].getCurY()) && 
-					this.getWeapon() != game.samurais[i].getWeapon() && 
-					this.getSide() != game.samurais[i].getSide()){
-				if (this.getHidden() == true) {
-					return true;
+					this.getCurY() == game.samurais[i].getCurY())){
+				if (this.getWeapon() == game.samurais[i].getWeapon() && this.getSide() == game.samurais[i].getSide()) {
+					//this one is the caller 
+					continue;
+				}else {
+					//there is another one existing
+					if (this.getHidden() == true) {
+						return true;
+					}
+					if (this.getHidden() == false) {
+						return false;
+					}
 				}
-				if (this.getHidden() == false) {
-					return false;
-				}
+				
 			}
 		}
 
-		int value = mapField[this.getCurX()][this.getCurX()];
+		int value = mapField[this.getCurY()][this.getCurX()];
 		//can't move to other samurais' home
 		if (value == Configure.HOMEOFCAP || value == Configure.HOMEOFIRONMAN) {
 			return false;
@@ -703,23 +787,29 @@ public abstract class Samurai {
 	 * @return
 	 */
 	private boolean canHit(Samurai hittenSamurai) {
-		int myWeapon = this.weapon;
-		int x1 = this.getCurX();
-		int y1 = this.getCurY();
-		int x2 = hittenSamurai.getCurX();
-		int y2 = hittenSamurai.getCurY();
-		
-		if (myWeapon == 0) {
-			return checkLineHit(x1, y1, x2, y2);
-		}else {
-			if (x1 == x2 || y1 == y2) {
-				//the two samurai is in line
+		if (hittenSamurai != null) {
+			//there is a samurai can be hitten
+			int myWeapon = this.weapon;
+			int x1 = this.getCurX();
+			int y1 = this.getCurY();
+			int x2 = hittenSamurai.getCurX();
+			int y2 = hittenSamurai.getCurY();
+
+			if (myWeapon == 0) {
 				return checkLineHit(x1, y1, x2, y2);
 			}else {
-				//the two samurai is in diagonal
-				return checkCornerHit(x1, y1, x2, y2);
+				if (x1 == x2 || y1 == y2) {
+					//the two samurai is in line
+					return checkLineHit(x1, y1, x2, y2);
+				}else {
+					//the two samurai is in diagonal
+					return checkCornerHit(x1, y1, x2, y2);
+				}
 			}
+		}else {
+			return false;
 		}
+		
 	}
 	
 	/**

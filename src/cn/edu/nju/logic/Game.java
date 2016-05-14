@@ -6,26 +6,21 @@ import cn.edu.nju.panels.GameField;
 import cn.edu.nju.panels.MapSelectPanel;
 import cn.edu.nju.panels.StartPanel;
 
-public class Game {
+public class Game implements Runnable{
 	public static final int PLAYER_NUM = 6;
 	public static final int TOTAL_TURNS = 1008;
 	
 	public Samurai[] samurais = new Samurai[6];
 	public GameField gameField;
 
-	public int curTurn = 0;							//the current turn of the game
 	public int curSamuraiNum = 0;					//the current controlled samurai
-	public int side;								//group ID（0 represent TeamCap，1 represent TeamIronMan）
-	public int weapon;								//Samurai ID，indicated by the weapon number
-	public int[][] map;
-	public int[][] samuraiField;
+	public int[][] map;								//gameField map
+	public int[][] samuraiField;					//samurais and their attackable blocks
 	
 	public Game(GameField gameField) {
 		this.gameField = gameField;
 		
-		map = Configure.mapField[MapSelectPanel.numOfMap - 1];
-//		map = Configure.mapField[1];
-		
+		map = Configure.mapField[MapSelectPanel.numOfMap - 1];		
 		samuraiField = Configure.samuraiField;
 		
 		//the even number represents TeamCap, odd number represents TeamIronMan
@@ -54,7 +49,7 @@ public class Game {
 		System.out.println("Finish Initializing the game");
 	}
 
-	public void execute(int action) {
+	public void execute(int curTurn, int action) {
 		if (cheakWin() == true && curTurn != TOTAL_TURNS) {
 			//one side has won the game, output the promot & !!!stop the game!!!
 			int winSide = winSide();
@@ -73,22 +68,20 @@ public class Game {
 		}else {
 			//gaming
 			this.curSamuraiNum = turn2Samurai(curTurn);
+			samurais[curSamuraiNum].setCountroled(true);
 			samurais[curSamuraiNum].doAction(action);
+			gameField.repaint();
+			
 			System.out.println(curTurn);
 			System.out.println(samurais[curSamuraiNum].getCurX());
 			System.out.println(samurais[curSamuraiNum].getCurY());
+			System.out.println(samurais[curSamuraiNum].getLifeSpan());
+			System.out.println(samurais[curSamuraiNum].getPower());
+
 			System.out.println();
 			//repaint
 		}
 
-	}
-
-	public void startGame() {
-		curSamuraiNum = 0;
-//		gameField.requestFocus();
-		Thread t = new Thread(new GameThread(this));
-		t.start();
-		System.out.println("Start the game");
 	}
 
 	/**
@@ -124,20 +117,12 @@ public class Game {
 		int numOfDeadIronMan = 0;
 		for (int i = 0; i < samurais.length; i++) {
 			if (samurais[i].isKilled()) {
-				if (samurais[i].getSide() == 0) {
-					numOfDeadCap++;
-				}
-				if (samurais[i].getSide() == 1) {
-					numOfDeadIronMan++;
-				}
+				if (samurais[i].getSide() == 0) numOfDeadCap++;
+				if (samurais[i].getSide() == 1) numOfDeadIronMan++;
 			}
 		}
-		if ((numOfDeadCap == PLAYER_NUM/2 && numOfDeadIronMan < PLAYER_NUM/2)){
-			return 1;
-		}
-		if ((numOfDeadIronMan == PLAYER_NUM/2 && numOfDeadCap < PLAYER_NUM/2)) {
-			return 0;
-		}
+		if ((numOfDeadCap == PLAYER_NUM/2 && numOfDeadIronMan < PLAYER_NUM/2)) return 1;
+		if ((numOfDeadIronMan == PLAYER_NUM/2 && numOfDeadCap < PLAYER_NUM/2)) return 0;
 		return -1;
 	}
 
@@ -149,7 +134,7 @@ public class Game {
 	 */
 	public Samurai isSamurai(int x, int y) {
 		for (int i = 0; i < samurais.length; i++) {
-			if (samurais[i].getCurX() == x && samurais[i].getCurY() == y && samurais[i].getHidden() != true) {
+			if (samurais[i].getCurX() == x && samurais[i].getCurY() == y && samurais[i].getHidden() == false) {
 				return samurais[i];
 			}
 		}
@@ -181,11 +166,8 @@ public class Game {
 	 * @return can /cannot
 	 */
 	public boolean isReachable(int x, int y) {
-		if (x < 0 || x >= 12 || y < 0 || y >= 12) {
-			return false;
-		}else {
-			return true;
-		}
+		if (x < 0 || x >= 12 || y < 0 || y >= 12) return false;
+		else return true;
 	}
 
 	/**
@@ -208,5 +190,15 @@ public class Game {
 			inputActions = input.substring(2, input.length());
 		}
 		return inputActions;
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		System.out.println("Start the game");
+		
+		while (true) {
+			
+		}
 	}
 }
