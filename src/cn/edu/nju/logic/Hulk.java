@@ -18,7 +18,10 @@ public class Hulk extends Samurai{
 		this.setCurY(this.getHomeY());
 		System.out.println("Initializing the Hulk");
 
-		samuraiField[getHomeX()][getHomeY()] = 22;
+		samuraiFieldNum = Configure.HULK;
+		samuraiFiledAttackNum = Configure.HULK_ATTACK;
+
+		samuraiField[getHomeY()][getHomeX()] = samuraiFieldNum;
 	}
 
 	@Override

@@ -173,6 +173,20 @@ public class Game {
 			return false;
 		}
 	}
+	
+	/**
+	 * to check whether this block can be reached to
+	 * @param x
+	 * @param y
+	 * @return can /cannot
+	 */
+	public boolean isReachable(int x, int y) {
+		if (x < 0 || x >= 12 || y < 0 || y >= 12) {
+			return false;
+		}else {
+			return true;
+		}
+	}
 
 	/**
 	 * get the current Samurai based on the current turn

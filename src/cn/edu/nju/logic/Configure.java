@@ -18,6 +18,21 @@ public class Configure {
 	public static final int TREE=4;
 	public static final int HOMEOFCAP=5;
 	public static final int HOMEOFIRONMAN=6;
+	
+	public static final int CAPTAIN_AMERICA = 11;
+	public static final int HULK = 22;
+	public static final int HAWKEYE = 33;
+	public static final int IRON_MAN = 44;
+	public static final int BLACK_WIDOW = 55;
+	public static final int SPIDER_MAN = 66;
+	
+	public static final int CAP_ATTACK = 1;
+	public static final int HULK_ATTACK = 2;
+	public static final int HAWKEYE_ATTACK = 3;
+	public static final int IRON_MAN_ATTACK = 4;
+	public static final int BLACK_WIDOW_ATTACK = 5;
+	public static final int SPIDER_MAN_ATTACK = 6;
+	
 	public static int[][] samuraiField=new int[][]{
 		{0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0},

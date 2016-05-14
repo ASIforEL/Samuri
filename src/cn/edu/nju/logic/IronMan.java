@@ -18,7 +18,10 @@ public class IronMan extends Samurai{
 		this.setCurY(this.getHomeY());
 		System.out.println("Initializing the IronMan");
 
-		samuraiField[getHomeX()][getHomeY()] = 44;
+		samuraiFieldNum = Configure.IRON_MAN;
+		samuraiFiledAttackNum = Configure.IRON_MAN_ATTACK;
+
+		samuraiField[getHomeY()][getHomeX()] = samuraiFieldNum;
 	}
 
 	@Override

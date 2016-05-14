@@ -20,7 +20,10 @@ public class SpiderMan extends Samurai{
 		this.setCurY(this.getHomeY());
 		System.out.println("Initializing the SpiderMan");
 
-		samuraiField[getHomeX()][getHomeY()] = 66;
+		samuraiFieldNum = Configure.SPIDER_MAN;
+		samuraiFiledAttackNum = Configure.SPIDER_MAN_ATTACK;
+
+		samuraiField[getHomeY()][getHomeX()] = samuraiFieldNum;
 	}
 
 	@Override

@@ -4,7 +4,8 @@ import java.awt.Graphics;
 
 public class CaptainAmerica extends Samurai{
 
-
+	
+	
 	public CaptainAmerica(Game game) {
 		super(game);
 		setSide(0);
@@ -18,7 +19,10 @@ public class CaptainAmerica extends Samurai{
 		this.setCurY(this.getHomeY());
 		System.out.println("Initializing the Cap");
 		
-		samuraiField[getHomeX()][getHomeY()] = 11;
+		samuraiFieldNum = Configure.CAPTAIN_AMERICA;
+		samuraiFiledAttackNum = Configure.CAP_ATTACK;
+		
+		samuraiField[getHomeY()][getHomeX()] = samuraiFieldNum;
 	}
 
 	@Override

@@ -20,7 +20,10 @@ public class Hawkeye extends Samurai {
 		this.setCurY(this.getHomeY());
 		System.out.println("Initializing the Hawkeye");
 
-		samuraiField[getHomeX()][getHomeY()] = 33;
+		samuraiFieldNum = Configure.HAWKEYE;
+		samuraiFiledAttackNum = Configure.HAWKEYE_ATTACK;
+
+		samuraiField[getHomeY()][getHomeX()] = samuraiFieldNum;
 	}
 
 	@Override
