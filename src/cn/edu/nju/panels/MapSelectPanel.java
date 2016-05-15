@@ -9,8 +9,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import cn.edu.nju.gameMusic.*;
 
-//��ͼѡ�����
 public class MapSelectPanel extends BackGroundPanel{
 
 	private static final long serialVersionUID = 1L;
@@ -42,6 +42,10 @@ public class MapSelectPanel extends BackGroundPanel{
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				leftBt.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/left2.png")));
+			musicThread mapEnter =  new musicThread();
+			mapEnter.creatMT(myAudioPlayer.mapEnter,1);
+			mapEnter.start();
+			mapEnter.stop();
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
@@ -62,7 +66,10 @@ public class MapSelectPanel extends BackGroundPanel{
 					mapLabel.setIcon(mapJL[2]);
 					numOfMap=3;
 				}
-
+				musicThread leftButton =  new musicThread();
+				leftButton.creatMT(myAudioPlayer.mapLeft, 1);
+				leftButton.start();
+				leftButton.stop();
 			}
 		});
 		leftBt.setBounds(30, 310, 40, 80);
@@ -75,6 +82,10 @@ public class MapSelectPanel extends BackGroundPanel{
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				rightBt.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/right2.png")));
+				musicThread mapEnter =  new musicThread();
+				mapEnter.creatMT(myAudioPlayer.mapEnter,1);
+				mapEnter.start();
+				mapEnter.stop();
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
@@ -95,7 +106,10 @@ public class MapSelectPanel extends BackGroundPanel{
 					mapLabel.setIcon(mapJL[0]);
 					numOfMap=1;
 				}
-
+				musicThread rightButton =  new musicThread();
+				rightButton.creatMT(myAudioPlayer.mapRight, 1);
+				rightButton.start();
+				rightButton.stop();
 			}
 		});
 		rightBt.setBounds(860, 310, 40, 80);
@@ -108,6 +122,10 @@ public class MapSelectPanel extends BackGroundPanel{
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				nextBt.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/next2.png")));
+				musicThread mapEnter =  new musicThread();
+				mapEnter.creatMT(myAudioPlayer.mapEnter,1);
+				mapEnter.start();
+				mapEnter.stop();
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
@@ -115,10 +133,12 @@ public class MapSelectPanel extends BackGroundPanel{
 			}
 			@Override
 
-			//���next��ť֮���������ѡ�����
 			public void mouseClicked(MouseEvent e) {
-				//���next��ť֮���������ѡ�����
 				StartPanel.getCard().show(StartPanel.getCardPanel(), "modeSelectPanel");
+				musicThread nextButton =  new musicThread();
+				nextButton.creatMT(myAudioPlayer.chooseMap, 1);
+				nextButton.start();
+				nextButton.stop();
 			}
 		});
 		nextBt.setBounds(565, 550, 70, 70);
@@ -131,10 +151,18 @@ public class MapSelectPanel extends BackGroundPanel{
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				StartPanel.getCard().show(StartPanel.getCardPanel(), "mainPane");
+				musicThread back =  new musicThread();
+				back.creatMT(myAudioPlayer.mapBack, 1);
+				back.start();
+				back.stop();
 			}
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				backBt.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/return2.png")));
+				musicThread mapEnter =  new musicThread();
+				mapEnter.creatMT(myAudioPlayer.mapEnter,1);
+				mapEnter.start();
+				mapEnter.stop();
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
@@ -149,11 +177,7 @@ public class MapSelectPanel extends BackGroundPanel{
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		/*
-		 *���Ի���Ѫ�������� 
-			new Samurai().drawBlood(g, this);
-			new Samurai().drawPower(g, this);
-		 */
+		
 	}
 
 }

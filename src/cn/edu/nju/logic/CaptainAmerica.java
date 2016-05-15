@@ -2,12 +2,13 @@ package cn.edu.nju.logic;
 
 import java.awt.Graphics;
 
+import cn.edu.nju.panels.GameField;
+
 public class CaptainAmerica extends Samurai{
 
 	
-	
-	public CaptainAmerica(Game game) {
-		super(game);
+	public CaptainAmerica(Game game, GameField gameField) {
+		super(game, gameField);
 		setSide(0);
 		setWeapon(0);
 		setLifeSpan(2);
@@ -20,7 +21,8 @@ public class CaptainAmerica extends Samurai{
 		System.out.println("Initializing the Cap");
 		
 		samuraiFieldNum = Configure.CAPTAIN_AMERICA;
-		samuraiFiledAttackNum = Configure.CAP_ATTACK;
+		hitRangeFieldNum = Configure.CAP_ATTACK;
+		manor = this.getSide() + 1;
 		
 		samuraiField[getHomeY()][getHomeX()] = samuraiFieldNum;
 	}

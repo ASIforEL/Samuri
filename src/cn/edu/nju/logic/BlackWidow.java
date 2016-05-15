@@ -2,11 +2,13 @@ package cn.edu.nju.logic;
 
 import java.awt.Graphics;
 
+import cn.edu.nju.panels.GameField;
+
 public class BlackWidow extends Samurai{
 
 	
-	public BlackWidow(Game game) {
-		super(game);
+	public BlackWidow(Game game, GameField gameField) {
+		super(game, gameField);
 		setSide(1);
 		setWeapon(1);
 		setLifeSpan(2);
@@ -19,8 +21,9 @@ public class BlackWidow extends Samurai{
 		System.out.println("Initializing the BlackWidow");
 
 		samuraiFieldNum = Configure.BLACK_WIDOW;
-		samuraiFiledAttackNum = Configure.BLACK_WIDOW_ATTACK;
-		
+		hitRangeFieldNum = Configure.BLACK_WIDOW_ATTACK;
+		manor = this.getSide() + 1;
+	
 		samuraiField[getHomeY()][getHomeX()] = samuraiFieldNum;
 	}
 

@@ -2,11 +2,13 @@ package cn.edu.nju.logic;
 
 import java.awt.Graphics;
 
+import cn.edu.nju.panels.GameField;
+
 public class IronMan extends Samurai{
 
 	
-	public IronMan(Game game) {
-		super(game);
+	public IronMan(Game game, GameField gameField) {
+		super(game, gameField);
 		setSide(1);
 		setWeapon(0);
 		setLifeSpan(4);
@@ -19,7 +21,8 @@ public class IronMan extends Samurai{
 		System.out.println("Initializing the IronMan");
 
 		samuraiFieldNum = Configure.IRON_MAN;
-		samuraiFiledAttackNum = Configure.IRON_MAN_ATTACK;
+		hitRangeFieldNum = Configure.IRON_MAN_ATTACK;
+		manor = this.getSide() + 1;
 
 		samuraiField[getHomeY()][getHomeX()] = samuraiFieldNum;
 	}

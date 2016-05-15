@@ -2,11 +2,13 @@ package cn.edu.nju.logic;
 
 import java.awt.Graphics;
 
+import cn.edu.nju.panels.GameField;
+
 public class Hulk extends Samurai{
 
 	
-	public Hulk(Game game) {
-		super(game);
+	public Hulk(Game game, GameField gameField) {
+		super(game, gameField);
 		setSide(0);
 		setWeapon(1);
 		setLifeSpan(4);
@@ -19,7 +21,8 @@ public class Hulk extends Samurai{
 		System.out.println("Initializing the Hulk");
 
 		samuraiFieldNum = Configure.HULK;
-		samuraiFiledAttackNum = Configure.HULK_ATTACK;
+		hitRangeFieldNum = Configure.HULK_ATTACK;
+		manor = this.getSide() + 1;
 
 		samuraiField[getHomeY()][getHomeX()] = samuraiFieldNum;
 	}

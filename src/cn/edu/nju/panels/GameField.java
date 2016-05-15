@@ -73,7 +73,7 @@ public class GameField extends BackGroundPanel {
 				case KeyEvent.VK_J:action = 10;execute();break;
 				case KeyEvent.VK_SPACE:action = 0;
 								//transfer the actionString
-								actionString = "";
+								actionString = "# ";
 								execute();break;
 				}
 			}
@@ -145,6 +145,7 @@ public class GameField extends BackGroundPanel {
 		}
 	}
 
+	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
 		drawField(g);
@@ -183,10 +184,10 @@ public class GameField extends BackGroundPanel {
 				} else if (Configure.map[i][j] == Configure.MOUN) {
 					g.drawImage(mountain, 40 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
 							340 + i * Configure.HEIGHT - 15, null);
-				} else if (Configure.map[i][j] == Configure.HOMEOFCAP) {
+				} else if (Configure.map[i][j] == Configure.HOME_OF_CAP) {
 					g.drawImage(homeOfCap, 40 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
 							340 + i * Configure.HEIGHT, null);
-				} else if (Configure.map[i][j] == Configure.HOMEOFIRONMAN) {
+				} else if (Configure.map[i][j] == Configure.HOME_OF_IRON_MAN) {
 					g.drawImage(homeOfIronMan, 40 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
 							340 + i * Configure.HEIGHT, null);
 				} else if (Configure.map[i][j] == Configure.TREE) {

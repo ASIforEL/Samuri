@@ -4,11 +4,13 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+import cn.edu.nju.panels.GameField;
+
 public class Hawkeye extends Samurai {
 
 	
-	public Hawkeye(Game game) {
-		super(game);
+	public Hawkeye(Game game, GameField gameField) {
+		super(game, gameField);
 		setSide(0);
 		setWeapon(2);
 		setLifeSpan(2);
@@ -21,7 +23,9 @@ public class Hawkeye extends Samurai {
 		System.out.println("Initializing the Hawkeye");
 
 		samuraiFieldNum = Configure.HAWKEYE;
-		samuraiFiledAttackNum = Configure.HAWKEYE_ATTACK;
+		hitRangeFieldNum = Configure.HAWKEYE_ATTACK;
+		manor = this.getSide() + 1;
+
 
 		samuraiField[getHomeY()][getHomeX()] = samuraiFieldNum;
 	}

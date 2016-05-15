@@ -1,0 +1,55 @@
+一、mapField[][][] / map[][]		//整张地图
+
+ROAD = 1;//这是对区域中每个方块进行初始化所用的数字，未被各方占领，未被设置为障碍，传送门，领地，武士大本营时，方块对应二维数组中的数字（该类型的特定标示符）
+
+
+SIDE:
+HOMEOFCAP = 5;//cap
+HOMEOFIRONMAN =6 ;//IronMan
+
+
+BLOCK:
+MOUN = 2 ;//障碍山
+TRANS = 3;//传送门在二维数组中对应的标示符，在逻辑中需注意传送门的标示符都相同，当进行一次传送后，在下一个位置不会再传送。以3开头，31、32，33、34，35、36
+TREE = 4
+
+
+
+
+
+二、samuraiField[][]			//标识武士的位置
+
+CAPTAIN_AMERICA = 11;		//cap队hero1		CaptainAmerica
+HULK = 22;			//cap队hero2		Hulk
+HAWKEYE = 33;			//cap队hero3		Hawkeye
+IRON_MAN = 44;			//IronMan队hero1	IronMan
+BLACK_WIDOW = 55;		//IronMan队hero2	BlackWidow
+SPIDER_MAN = 66;		//IronMan队hero3	SpiderMan
+
+
+
+
+
+三、hitRangeField[][][]			//标志可攻击到的范围
+
+－1				//因为障碍等，不能攻击
+0				//不在攻击范围内
+
+CAP_ATTACK = 1;		
+HULK_ATTACK = 2;
+HAWKEYE_ATTACK = 3;
+IRON_MAN_ATTACK = 4;
+BLACK_WIDOW_ATTACK = 5;
+SPIDER_MAN_ATTACK = 6;
+
+
+
+
+四、scoreField[][]			//标识通过攻击所占领的区域，以队伍为记分单位
+
+-1		//不可被占领
+0		//未有人占领
+1		//被TeamCap占领
+2		//被TeamIronMan占领
+每个samurai的攻击占领其区域
+比较得分，超过总分80%者获胜

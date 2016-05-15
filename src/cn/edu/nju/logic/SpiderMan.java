@@ -4,11 +4,13 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+import cn.edu.nju.panels.GameField;
+
 public class SpiderMan extends Samurai{
 
 	
-	public SpiderMan(Game game) {
-		super(game);
+	public SpiderMan(Game game, GameField gameField) {
+		super(game, gameField);
 		setSide(1);
 		setWeapon(2);
 		setLifeSpan(2);
@@ -21,7 +23,8 @@ public class SpiderMan extends Samurai{
 		System.out.println("Initializing the SpiderMan");
 
 		samuraiFieldNum = Configure.SPIDER_MAN;
-		samuraiFiledAttackNum = Configure.SPIDER_MAN_ATTACK;
+		hitRangeFieldNum = Configure.SPIDER_MAN_ATTACK;
+		manor = this.getSide() + 1;
 
 		samuraiField[getHomeY()][getHomeX()] = samuraiFieldNum;
 	}

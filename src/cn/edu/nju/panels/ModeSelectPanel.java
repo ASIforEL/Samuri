@@ -3,23 +3,22 @@ package cn.edu.nju.panels;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-
+import cn.edu.nju.gameMusic.musicThread;
+import cn.edu.nju.gameMusic.myAudioPlayer;
 import cn.edu.nju.panels.*;
-
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import cn.edu.nju.gameMusic.*;
 
 public class ModeSelectPanel extends BackGroundPanel {
 	static int team1hero=1;
@@ -36,7 +35,7 @@ public class ModeSelectPanel extends BackGroundPanel {
 		setLayout(null);
 
 		JLabel vs = new JLabel(new ImageIcon(this.getClass().getResource("/cn/picture/vs.png")));
-		vs.setBounds(400, 280, 160, 160);
+		vs.setBounds(400, 70, 160, 160);
 		add(vs);
 		 
 		JButton btnFight=new JButton(new ImageIcon(this.getClass().getResource("/cn/picture/next.png")));
@@ -46,15 +45,24 @@ public class ModeSelectPanel extends BackGroundPanel {
 		btnFight.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-	/////////if you get it£¬   				StartPanel.getCard().show(StartPanel.getCardPanel(), "gameFieldPanel");
+
+				
+/////////if you get it£¬   				StartPanel.getCard().show(StartPanel.getCardPanel(), "gameFieldPanel");
 //if not .... how to dispose the fore Frame......
 				new GameFrame();
-					
+				musicThread nextButton =  new musicThread();
+				nextButton.creatMT(myAudioPlayer.enterSprites, 1);
+				nextButton.start();
+				nextButton.stop();
 				}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				btnFight.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/next2.png")));
+				musicThread modelEnter =  new musicThread();
+				modelEnter.creatMT(myAudioPlayer.mapEnter,1);
+				modelEnter.start();
+				modelEnter.stop();
 			}
 
 			@Override
@@ -62,7 +70,7 @@ public class ModeSelectPanel extends BackGroundPanel {
 				btnFight.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/next.png")));
 			}
 		});
-		btnFight.setBounds(550, 600, 70, 70);
+		btnFight.setBounds(565, 600, 70, 70);
 		add(btnFight);
 		
 		 
@@ -84,13 +92,20 @@ public class ModeSelectPanel extends BackGroundPanel {
 				 }
 				}
 				});
+				musicThread back =  new musicThread();
+				back.creatMT(myAudioPlayer.modelBack, 1);
+				back.start();
+				back.stop();
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
 			
 				btnBack.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/return2.png")));
-				
+				musicThread modelEnter =  new musicThread();
+				modelEnter.creatMT(myAudioPlayer.mapEnter,1);
+				modelEnter.start();
+				modelEnter.stop();
 			}
 
 			@Override
@@ -98,7 +113,7 @@ public class ModeSelectPanel extends BackGroundPanel {
 				btnBack.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/return.png")));
 			}
 		});
-		btnBack.setBounds(340, 605, 120, 60);
+		btnBack.setBounds(300, 605, 120, 60);
 		add(btnBack);
 
 		//load hero JL of each team 
@@ -120,6 +135,20 @@ public class ModeSelectPanel extends BackGroundPanel {
 		team1.addMouseListener(new MouseAdapter() {
 			public void mouseEntered(MouseEvent e) {
 				team1.setIcon(hero1JL0[team1hero-1]);
+				musicThread team1 =  new musicThread();
+				if(team1hero==1){
+					team1.creatMT(myAudioPlayer.voiceOfCaptainAmerica, 1);
+					team1.start();
+					team1.stop();
+				}else if(team1hero==2){
+					team1.creatMT(myAudioPlayer.voiceOfHulk, 1);
+					team1.start();
+					team1.stop();
+				}else if(team1hero==3){
+					team1.creatMT(myAudioPlayer.voiceOfHawkeye, 1);
+					team1.start();
+					team1.stop();
+				}
 			}
 			public void mouseExited(MouseEvent e) {
 				team1.setIcon(hero1JL[team1hero-1]);
@@ -132,6 +161,20 @@ public class ModeSelectPanel extends BackGroundPanel {
 		team2.addMouseListener(new MouseAdapter() {
 			public void mouseEntered(MouseEvent e) {
 				team2.setIcon(hero2JL0[team2hero-1]);
+				musicThread team2 =  new musicThread();
+				if(team2hero==1){
+					team2.creatMT(myAudioPlayer.voiceOfIronMan, 1);
+					team2.start();
+					team2.stop();
+				}else if(team2hero==2){
+					team2.creatMT(myAudioPlayer.voiceOfBlackWdiow, 1);
+					team2.start();
+					team2.stop();
+				}else if(team2hero==3){
+					team2.creatMT(myAudioPlayer.voiceOfSpiderMan, 1);
+					team2.start();
+					team2.stop();
+				}
 			}
 			public void mouseExited(MouseEvent e) {
 				team2.setIcon(hero2JL[team2hero-1]);
@@ -151,6 +194,10 @@ public class ModeSelectPanel extends BackGroundPanel {
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				leftBt1.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/left2.png")));
+				musicThread modelEnter =  new musicThread();
+				modelEnter.creatMT(myAudioPlayer.mapEnter,1);
+				modelEnter.start();
+				modelEnter.stop();
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
@@ -168,7 +215,10 @@ public class ModeSelectPanel extends BackGroundPanel {
 					team1.setIcon(hero1JL[1]);
 					team1hero=2;
 				}
-				
+				musicThread leftButton1 =  new musicThread();
+				leftButton1.creatMT(myAudioPlayer.modelLeft, 1);
+				leftButton1.start();
+				leftButton1.stop();
 			}
 		});
 		leftBt1.setBounds(20, 310, 40, 80);
@@ -181,6 +231,10 @@ public class ModeSelectPanel extends BackGroundPanel {
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				rightBt1.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/right2.png")));
+				musicThread modelEnter =  new musicThread();
+				modelEnter.creatMT(myAudioPlayer.mapEnter,1);
+				modelEnter.start();
+				modelEnter.stop();
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
@@ -198,7 +252,10 @@ public class ModeSelectPanel extends BackGroundPanel {
 					team1.setIcon(hero1JL[0]);
 					team1hero=1;
 				}
-				
+				musicThread rightButton1 =  new musicThread();
+				rightButton1.creatMT(myAudioPlayer.modelRight, 1);
+				rightButton1.start();
+				rightButton1.stop();
 			}
 		});
 	
@@ -214,10 +271,15 @@ public class ModeSelectPanel extends BackGroundPanel {
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				leftBt2.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/left2.png")));
+				musicThread modelEnter =  new musicThread();
+				modelEnter.creatMT(myAudioPlayer.mapEnter,1);
+				modelEnter.start();
+				modelEnter.stop();
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
 				leftBt2.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/left.png")));
+			
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -231,7 +293,10 @@ public class ModeSelectPanel extends BackGroundPanel {
 					team2.setIcon(hero2JL[1]);
 					team2hero=2;
 				}
-				
+				musicThread leftButton2 =  new musicThread();
+				leftButton2.creatMT(myAudioPlayer.modelLeft, 1);
+				leftButton2.start();
+				leftButton2.stop();
 			}
 		});
 		leftBt2.setBounds( 550, 310, 40, 80);
@@ -244,6 +309,10 @@ public class ModeSelectPanel extends BackGroundPanel {
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				rightBt2.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/right2.png")));
+				musicThread modelEnter =  new musicThread();
+				modelEnter.creatMT(myAudioPlayer.mapEnter,1);
+				modelEnter.start();
+				modelEnter.stop();
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
@@ -261,7 +330,10 @@ public class ModeSelectPanel extends BackGroundPanel {
 					team2.setIcon(hero2JL[0]);
 					team2hero=1;
 				}
-				
+				musicThread rightButton2 =  new musicThread();
+				rightButton2.creatMT(myAudioPlayer.modelRight, 1);
+			    rightButton2.start();
+				rightButton2.stop();
 			}
 		});
 	

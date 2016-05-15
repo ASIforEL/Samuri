@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
+import cn.edu.nju.gameMusic.*;
 public class TeamModePanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
@@ -42,6 +42,10 @@ public class TeamModePanel extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				StartPanel.getCard().show(StartPanel.getCardPanel(), "gameFieldPanel");
+				musicThread fight =  new musicThread();
+				fight.creatMT(myAudioPlayer.enterSprites, 1);
+				fight.start();
+				fight.stop();
 			}
 			@Override
 			public void mouseEntered(MouseEvent e) {

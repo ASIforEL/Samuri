@@ -22,11 +22,14 @@ public abstract class Samurai {
 	private int side;							//Group ID. 0 represents TeamCap，1 represents TeamIronMan
 	private int curPower;
 	public Game game;
-	int[][] samuraiField = Configure.samuraiField;
+	public GameField gameField;
+	
 	int[][] mapField = Configure.map;
-
-	protected int samuraiFieldNum;				//11 / 22 / 33 / 44 / 55 / 66
-	protected int samuraiFiledAttackNum;		//1 / 2 / 3 / 4 / 5 / 6
+	int[][] samuraiField = Configure.samuraiField;		//set the samurai's current locatioon
+	
+	protected int samuraiFieldNum;				//of samuraiField[][]	11 / 22 / 33 / 44 / 55 / 66
+	protected int hitRangeFieldNum;				//of hitRangeField[][][] in Game game		1 / 2 / 3 / 4 / 5 / 6
+	protected int manor;
 	
 	protected Image samuraiImg;
 	protected Image bloodImg;
@@ -37,7 +40,7 @@ public abstract class Samurai {
 	protected int initPower_X;
 	protected int initPower_Y;
 	
-	public Samurai(Game game){
+	public Samurai(Game game, GameField gameField){
 		try {
 			bloodImg = ImageIO.read(this.getClass().getResource("/cn/picture/blood.png"));
 			powerImg = ImageIO.read(this.getClass().getResource("/cn/picture/power.png"));
@@ -48,6 +51,7 @@ public abstract class Samurai {
 		Samurai.powerInfo = "";
 		
 		this.game = game;
+		this.gameField = gameField;
 		this.hidden = false;
 		this.countrolled = false;
 		this.curPower = TOTAL_POWER;
@@ -165,271 +169,102 @@ public abstract class Samurai {
 	 * do the action actually
 	 */
 	public void doAction(int action) {
-		if (this.isValid(action) == true) {
-			//it can do this action
-			if (action == 0) {
-				this.setCountroled(false);
-				updatePower();
-				GameField.curTurn++;
-			}
-			
-			if (action >= 1 && action <= 4){
-				int preX = this.getCurX();
-				int preY = this.getCurY();
-				
-				this.rotate(action);
-				moveForward();
-				this.curPower -= 2;
-
-				int value = mapField[this.getCurY()][this.getCurX()];
-				if (value == Configure.TRANS1 || value == Configure.TRANS2 || value == Configure.TRANS3 || 
-						value == Configure.TRANS4 || value == Configure.TRANS5 || value == Configure.TRANS6) {
-					transfer();
+			if (this.isValid(action) == true) {
+				if (isKilled() == true) {
+					//this samurai has dead
+					this.setCountroled(false);
+					GameField.curTurn++;
+					//this action actually need to be done by the next samurai
+					game.execute(GameField.curTurn, action);
+					return;
 				}
-				
-				samuraiField[preY][preX] = 0;
-				samuraiField[this.getCurY()][this.getCurX()] = this.samuraiFieldNum;
-			}
-
-			if (action == 6){
-				this.hidden = true;
-				this.curPower -= 1;
-			}
-
-			if (action == 7){
-				this.hidden = false;
-				this.curPower -= 1;
-			}
-
-			if (action == 10) {
-				switch (this.weapon) {
-				case 0:
-					for (int i = 11; i <= 13; i++) {
-						if (canHit(getHittenSamurai(i))) {
-							hit(getHittenSamurai(i));
-						}
-					}break;
-		
-				case 1:
-					for (int i = 11; i <= 15; i++) {
-						if (canHit(getHittenSamurai(i))) {
-							hit(getHittenSamurai(i));
-						}
-					}break;
-
-				case 2:
-					for (int i = 11; i <= 17; i++) {
-						if (canHit(getHittenSamurai(i))) {
-							hit(getHittenSamurai(i));
-						}
-					}break;
+				//it can do this action
+				if (action == 0) {
+					this.setCountroled(false);
+					updatePower();
+					GameField.curTurn++;
 				}
-				this.curPower -= 3;
-			}
-		}else {
-			//it can not do this action
-			if (this.getPowerInfo() != "") {
-				JOptionPane.showMessageDialog(null, this.getPowerInfo());
-				this.setPowerInfo("");
+
+				if (action >= 1 && action <= 4){
+					int preX = this.getCurX();
+					int preY = this.getCurY();
+
+					this.rotate(action);
+					moveForward();
+					this.curPower -= 2;
+
+					int value = mapField[this.getCurY()][this.getCurX()];
+					if (value == Configure.TRANS1 || value == Configure.TRANS2 || value == Configure.TRANS3 || 
+							value == Configure.TRANS4 || value == Configure.TRANS5 || value == Configure.TRANS6) {
+						transfer();
+					}
+
+					samuraiField[preY][preX] = 0;
+					samuraiField[this.getCurY()][this.getCurX()] = this.samuraiFieldNum;
+				}
+
+				if (action == 6){
+					this.hidden = true;
+					this.curPower -= 1;
+				}
+
+				if (action == 7){
+					this.hidden = false;
+					this.curPower -= 1;
+				}
+
+				if (action == 10) {
+					occupy();
+					
+					switch (this.weapon) {
+					case 0:
+						for (int i = 11; i <= 13; i++) {
+							if (canHit(getHittenSamurai(i))) {
+								hit(getHittenSamurai(i));
+							}
+						}break;
+
+					case 1:
+						for (int i = 11; i <= 15; i++) {
+							if (canHit(getHittenSamurai(i))) {
+								hit(getHittenSamurai(i));
+							}
+						}break;
+
+					case 2:
+						for (int i = 11; i <= 17; i++) {
+							if (canHit(getHittenSamurai(i))) {
+								hit(getHittenSamurai(i));
+							}
+						}break;
+					}
+					this.curPower -= 3;
+				}
 			}else {
-				switch (action) {
-				case 1:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
-				case 2:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
-				case 3:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
-				case 4:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
-				case 6:JOptionPane.showMessageDialog(null, "You cannot hide!");break;
-				case 7:JOptionPane.showMessageDialog(null, "You cannot show!");break;
-				case 10:JOptionPane.showMessageDialog(null, "You cannot hit this region!");break;
+				//it can not do this action
+				if (this.getPowerInfo() != "") {
+					JOptionPane.showMessageDialog(null, this.getPowerInfo());
+					this.setPowerInfo("");
+				}else {
+					switch (action) {
+					case 1:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
+					case 2:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
+					case 3:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
+					case 4:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
+					case 6:JOptionPane.showMessageDialog(null, "You cannot hide!");break;
+					case 7:JOptionPane.showMessageDialog(null, "You cannot show!");break;
+					case 10:JOptionPane.showMessageDialog(null, "You cannot hit this region!");break;
+					}
+
+				}
 			}
-			
-			}
-		}	
+//		}else {
+//			//this one has dead
+//			this.setCountroled(false);
+//			GameField.curTurn++;
+//		}
 	}
-	
-	/**
-	 * set this samurai's attack range
-	 * before you do this method setHitRange(), you need to set this samurai's preHitRange to 0 in samuraiField
-	 */
-	public void setHitRange() {
-		switch (this.getWeapon()) {
-		case 0:setHitRange0();break;
-		case 1:setHitRange1();break;
-		case 2:setHitRange2();break;
-		}
-	}
-	
-	private void setHitRange0() {
-		switch (this.getDirection()) {
-		case WEST:
-			for (int i = 1; i <= 3; i++) {
-				if (!game.isSpecial(this.getWest(i).getX(), this.getWest(i).getY()) && 
-						game.isReachable(this.getWest(i).getX(), this.getWest(i).getY())) {
-					samuraiField[this.getWest(i).getX()][this.getWest(i).getY()] = this.samuraiFiledAttackNum;
-				}
-			}break;
-		case EAST:
-			for (int i = 1; i <= 3; i++) {
-				if (!game.isSpecial(this.getEast(i).getX(), this.getEast(i).getY()) && 
-						game.isReachable(this.getEast(i).getX(), this.getEast(i).getY())) {
-					samuraiField[this.getEast(i).getX()][this.getEast(i).getY()] = this.samuraiFiledAttackNum;
-				}
-			}break;
-		case NORTH:
-			for (int i = 1; i <= 3; i++) {
-				if (!game.isSpecial(this.getNorth(i).getX(), this.getNorth(i).getY()) && 
-						game.isReachable(this.getNorth(i).getX(), this.getNorth(i).getY())) {
-					samuraiField[this.getNorth(i).getX()][this.getNorth(i).getY()] = this.samuraiFiledAttackNum;
-				}
-			}break;
-		case SOUTH:
-			for (int i = 1; i <= 3; i++) {
-				if (!game.isSpecial(this.getSouth(i).getX(), this.getSouth(i).getY()) && 
-						game.isReachable(this.getSouth(1).getX(), this.getSouth(1).getY())) {
-					samuraiField[this.getSouth(i).getX()][this.getSouth(i).getY()] = this.samuraiFiledAttackNum;
-				}
-			}break;
-		}
-	}
-	
-	private void setHitRange1() {
-		switch (this.getDirection()) {
-		case WEST:
-			for (int i = 1; i <= 2; i++) {
-				if (!game.isSpecial(this.getSouth(i).getX(), this.getSouth(i).getY()) && 
-						game.isReachable(this.getSouth(1).getX(), this.getSouth(1).getY())) {
-					samuraiField[this.getSouth(i).getX()][this.getSouth(i).getY()] = this.samuraiFiledAttackNum;
-				}
-				if (!game.isSpecial(this.getWest(i).getX(), this.getWest(i).getY()) && 
-						game.isReachable(this.getWest(i).getX(), this.getWest(i).getY())) {
-					samuraiField[this.getWest(i).getX()][this.getWest(i).getY()] = this.samuraiFiledAttackNum;
-				}
-			}
-			if (!game.isSpecial(this.getSouthWest(1).getX(), this.getSouthWest(1).getY()) && 
-					game.isReachable(this.getSouthWest(1).getX(), this.getSouthWest(1).getY())) {
-				samuraiField[this.getSouthWest(1).getX()][this.getSouthWest(1).getY()] = this.samuraiFiledAttackNum;
-			}
-			break;
-		case EAST:
-			for (int i = 1; i <= 2; i++) {
-				if (!game.isSpecial(this.getNorth(i).getX(), this.getNorth(i).getY()) && 
-						game.isReachable(this.getNorth(i).getX(), this.getNorth(i).getY())) {
-					samuraiField[this.getNorth(i).getX()][this.getNorth(i).getY()] = this.samuraiFiledAttackNum;
-				}
-				if (!game.isSpecial(this.getEast(i).getX(), this.getEast(i).getY()) && 
-						game.isReachable(this.getEast(i).getX(), this.getEast(i).getY())) {
-					samuraiField[this.getEast(i).getX()][this.getEast(i).getY()] = this.samuraiFiledAttackNum;
-				}
-			}
-			if (!game.isSpecial(this.getNorthEast(1).getX(), this.getNorthEast(1).getY()) && 
-					game.isReachable(this.getNorthEast(1).getX(), this.getNorthEast(1).getY())) {
-				samuraiField[this.getNorthEast(1).getX()][this.getNorthEast(1).getY()] = this.samuraiFiledAttackNum;
-			}
-			break;
-		case NORTH:
-			for (int i = 1; i <= 2; i++) {
-				if (!game.isSpecial(this.getNorth(i).getX(), this.getNorth(i).getY()) && 
-						game.isReachable(this.getNorth(i).getX(), this.getNorth(i).getY())) {
-					samuraiField[this.getNorth(i).getX()][this.getNorth(i).getY()] = this.samuraiFiledAttackNum;
-				}
-				if (!game.isSpecial(this.getWest(i).getX(), this.getWest(i).getY()) && 
-						game.isReachable(this.getWest(i).getX(), this.getWest(i).getY())) {
-					samuraiField[this.getWest(i).getX()][this.getWest(i).getY()] = this.samuraiFiledAttackNum;
-				}
-			}
-			if (!game.isSpecial(this.getNorthWest(1).getX(), this.getNorthWest(1).getY()) && 
-					game.isReachable(this.getNorthWest(1).getX(), this.getNorthWest(1).getY())) {
-				samuraiField[this.getNorthWest(1).getX()][this.getNorthWest(1).getY()] = this.samuraiFiledAttackNum;
-			}
-			break;
-		case SOUTH:
-			for (int i = 1; i <= 2; i++) {
-				if (!game.isSpecial(this.getSouth(i).getX(), this.getSouth(i).getY()) && 
-						game.isReachable(this.getSouth(1).getX(), this.getSouth(1).getY())) {
-					samuraiField[this.getSouth(i).getX()][this.getSouth(i).getY()] = this.samuraiFiledAttackNum;
-				}
-				if (!game.isSpecial(this.getEast(i).getX(), this.getEast(i).getY()) && 
-						game.isReachable(this.getEast(i).getX(), this.getEast(i).getY())) {
-					samuraiField[this.getEast(i).getX()][this.getEast(i).getY()] = this.samuraiFiledAttackNum;
-				}
-			}
-			if (!game.isSpecial(this.getSouthEast(1).getX(), this.getSouthEast(1).getY()) && 
-					game.isReachable(this.getSouthEast(1).getX(), this.getSouthEast(1).getY())) {
-				samuraiField[this.getSouthEast(1).getX()][this.getSouthEast(1).getY()] = this.samuraiFiledAttackNum;
-			}
-			break;
-		}
-	}
-	
-	private void setHitRange2() {
-		if (!game.isSpecial(this.getSouthEast(1).getX(), this.getSouthEast(1).getY()) && 
-				game.isReachable(this.getSouthEast(1).getX(), this.getSouthEast(1).getY())) {
-			samuraiField[this.getSouthEast(1).getX()][this.getSouthEast(1).getY()] = this.samuraiFiledAttackNum;
-		}
-		if (!game.isSpecial(this.getSouthWest(1).getX(), this.getSouthWest(1).getY()) && 
-				game.isReachable(this.getSouthWest(1).getX(), this.getSouthWest(1).getY())) {
-			samuraiField[this.getSouthWest(1).getX()][this.getSouthWest(1).getY()] = this.samuraiFiledAttackNum;
-		}
-		if (!game.isSpecial(this.getNorthWest(1).getX(), this.getNorthWest(1).getY()) && 
-				game.isReachable(this.getNorthWest(1).getX(), this.getNorthWest(1).getY())) {
-			samuraiField[this.getNorthWest(1).getX()][this.getNorthWest(1).getY()] = this.samuraiFiledAttackNum;
-		}
-		if (!game.isSpecial(this.getNorthEast(1).getX(), this.getNorthEast(1).getY()) && 
-				game.isReachable(this.getNorthEast(1).getX(), this.getNorthEast(1).getY())) {
-			samuraiField[this.getNorthEast(1).getX()][this.getNorthEast(1).getY()] = this.samuraiFiledAttackNum;
-		}
-		switch (this.getDirection()) {
-		case WEST:
-			if (!game.isSpecial(this.getWest(1).getX(), this.getWest(1).getY()) && 
-					game.isReachable(this.getWest(1).getX(), this.getWest(1).getY())) {
-				samuraiField[this.getWest(1).getX()][this.getWest(1).getY()] = this.samuraiFiledAttackNum;
-			}
-			if (!game.isSpecial(this.getNorth(1).getX(), this.getNorth(1).getY()) && 
-					game.isReachable(this.getNorth(1).getX(), this.getNorth(1).getY())) {
-				samuraiField[this.getNorth(1).getX()][this.getNorth(1).getY()] = this.samuraiFiledAttackNum;
-			}if (!game.isSpecial(this.getSouth(1).getX(), this.getSouth(1).getY()) && 
-					game.isReachable(this.getSouth(1).getX(), this.getSouth(1).getY())) {
-				samuraiField[this.getSouth(1).getX()][this.getSouth(1).getY()] = this.samuraiFiledAttackNum;
-			}break;
-		case EAST:
-			if (!game.isSpecial(this.getEast(1).getX(), this.getEast(1).getY()) && 
-					game.isReachable(this.getEast(1).getX(), this.getEast(1).getY())) {
-				samuraiField[this.getEast(1).getX()][this.getEast(1).getY()] = this.samuraiFiledAttackNum;
-			}
-			if (!game.isSpecial(this.getNorth(1).getX(), this.getNorth(1).getY()) && 
-					game.isReachable(this.getNorth(1).getX(), this.getNorth(1).getY())) {
-				samuraiField[this.getNorth(1).getX()][this.getNorth(1).getY()] = this.samuraiFiledAttackNum;
-			}if (!game.isSpecial(this.getSouth(1).getX(), this.getSouth(1).getY()) && 
-					game.isReachable(this.getSouth(1).getX(), this.getSouth(1).getY())) {
-				samuraiField[this.getSouth(1).getX()][this.getSouth(1).getY()] = this.samuraiFiledAttackNum;
-			}break;
-		case NORTH:
-			if (!game.isSpecial(this.getWest(1).getX(), this.getWest(1).getY()) && 
-					game.isReachable(this.getWest(1).getX(), this.getWest(1).getY())) {
-				samuraiField[this.getWest(1).getX()][this.getWest(1).getY()] = this.samuraiFiledAttackNum;
-			}
-			if (!game.isSpecial(this.getEast(1).getX(), this.getEast(1).getY()) && 
-					game.isReachable(this.getEast(1).getX(), this.getEast(1).getY())) {
-				samuraiField[this.getEast(1).getX()][this.getEast(1).getY()] = this.samuraiFiledAttackNum;
-			}
-			if (!game.isSpecial(this.getNorth(1).getX(), this.getNorth(1).getY()) && 
-					game.isReachable(this.getNorth(1).getX(), this.getNorth(1).getY())) {
-				samuraiField[this.getNorth(1).getX()][this.getNorth(1).getY()] = this.samuraiFiledAttackNum;
-			}break;
-		case SOUTH:
-			if (!game.isSpecial(this.getWest(1).getX(), this.getWest(1).getY()) && 
-					game.isReachable(this.getWest(1).getX(), this.getWest(1).getY())) {
-				samuraiField[this.getWest(1).getX()][this.getWest(1).getY()] = this.samuraiFiledAttackNum;
-			}
-			if (!game.isSpecial(this.getEast(1).getX(), this.getEast(1).getY()) && 
-					game.isReachable(this.getEast(1).getX(), this.getEast(1).getY())) {
-				samuraiField[this.getEast(1).getX()][this.getEast(1).getY()] = this.samuraiFiledAttackNum;
-			}
-			if (!game.isSpecial(this.getSouth(1).getX(), this.getSouth(1).getY()) && 
-					game.isReachable(this.getSouth(1).getX(), this.getSouth(1).getY())) {
-				samuraiField[this.getSouth(1).getX()][this.getSouth(1).getY()] = this.samuraiFiledAttackNum;
-			}break;
-		}
-	}
+
 
 	/**
 	 * change the direction
@@ -499,14 +334,14 @@ public abstract class Samurai {
 		int value = mapField[this.getCurY()][this.getCurX()];
 		
 		switch (value) {
-		case Configure.TRANS1:setCurX(9);setCurY(11);break;
-		case Configure.TRANS2:setCurX(3);setCurY(1);break;
-		case Configure.TRANS3:setCurX(8);setCurY(1);break;
-		case Configure.TRANS4:setCurX(2);setCurY(11);break;
-		case Configure.TRANS5:setCurX(6);setCurY(8);setDirection(Direction.EAST);break;
-		case Configure.TRANS6:setCurX(5);setCurY(7);setDirection(Direction.SOUTH);break;
-		case Configure.TRANS7:setCurX(9);setCurY(6);setDirection(Direction.WEST);break;
-		case Configure.TRANS8:setCurX(4);setCurY(8);setDirection(Direction.NORTH);break;
+		case Configure.TRANS1:setCurX(8);setCurY(11);break;
+		case Configure.TRANS2:setCurX(4);setCurY(1);break;
+		case Configure.TRANS3:setCurX(7);setCurY(1);break;
+		case Configure.TRANS4:setCurX(3);setCurY(11);break;
+		case Configure.TRANS5:setCurX(7);setCurY(8);setDirection(Direction.EAST);break;
+		case Configure.TRANS6:setCurX(5);setCurY(8);setDirection(Direction.SOUTH);break;
+		case Configure.TRANS7:setCurX(8);setCurY(6);setDirection(Direction.WEST);break;
+		case Configure.TRANS8:setCurX(4);setCurY(7);setDirection(Direction.NORTH);break;
 		}
 	}
 
@@ -515,127 +350,133 @@ public abstract class Samurai {
 	 */
 	private void hit(Samurai hittenSamurai) {
 		if (hittenSamurai != null) {
-			this.setLifeSpan(this.getLifeSpan() - 1);
-			setCurX(this.homeX);
-			setCurY(this.homeY);
+			hittenSamurai.setLifeSpan(hittenSamurai.getLifeSpan() - 1);
+			hittenSamurai.setCurX(hittenSamurai.getHomeX());
+			hittenSamurai.setCurY(hittenSamurai.getHomeY());
 		}
 	}
-
-
+	
 	/**
 	 * to check whether the action is valid or not
 	 * @param action
 	 * @return 
 	 */
-	private boolean isValid(int action) {		
-		//save the previous data to resume the situation
-		int preX = this.getCurX();
-		int preY = this.getCurY();
-		Direction preDirection = this.getDirection();
-		boolean preHidden = this.getHidden();
-
-		if (action == 0) {
+	private boolean isValid(int action) {
+		if (this.isKilled() == true) {
+			//this samurai has dead and it cannot do actions actually
+			//but we return true and check it in the following steps
 			return true;
-		}
-		
-		if (action >= 1 && action <= 4){
-			//check it has enough power to do the action
-			if (this.getPower() < NeededPower.MOVE) {
-				this.setPowerInfo("You have not enough power to execute this action!");
-				return false;
-			}else{
-				if (canMove(action) == true) {
-					resume(preX, preY, preDirection, preHidden);
-					return true;
-				}else {
-					resume(preX, preY, preDirection, preHidden);
+		}else {
+			//this samurai is alive
+			//save the previous data to resume the situation
+			int preX = this.getCurX();
+			int preY = this.getCurY();
+			Direction preDirection = this.getDirection();
+			boolean preHidden = this.getHidden();
+
+			if (action == 0) {
+				return true;
+			}
+
+			if (action >= 1 && action <= 4){
+				//check it has enough power to do the action
+				if (this.getPower() < NeededPower.MOVE) {
+					this.setPowerInfo("You have not enough power to execute this action!");
 					return false;
+				}else{
+					if (canMove(action) == true) {
+						resume(preX, preY, preDirection, preHidden);
+						return true;
+					}else {
+						resume(preX, preY, preDirection, preHidden);
+						return false;
+					}
 				}
 			}
-		}
 
-		if (action == 6){
-			//check it has enough power to do the action
-			if (this.getPower() < NeededPower.HIDE) {
-				this.setPowerInfo("You have not enough power to execute this action!");
-				return false;
-			}else {
-				if (this.getHidden() == true){
-					resume(preX, preY, preDirection, preHidden);
+			if (action == 6){
+				//check it has enough power to do the action
+				if (this.getPower() < NeededPower.HIDE) {
+					this.setPowerInfo("You have not enough power to execute this action!");
 					return false;
-				}else  {
+				}else {
+					if (this.getHidden() == true){
+						resume(preX, preY, preDirection, preHidden);
+						return false;
+					}else  {
+						resume(preX, preY, preDirection, preHidden);
+						return true;
+					}
+				}
+			}
+
+			if (action == 7){
+				//check it has enough power to do the action
+				if (this.getPower() < NeededPower.SHOW) {
+					this.setPowerInfo("You have not enough power to execute this action!");
+					return false;
+				}else{
+					if (this.getHidden() == false){
+						//it is not hidden
+						resume(preX, preY, preDirection, preHidden);
+						return false;
+					}else {
+						//it is hidden, but it cannot show if there is a samurai, which is not hidden, in the block
+						for (int i = 0; i < Game.PLAYER_NUM; ++i){
+							Samurai other = game.samurais[i];
+							if (other.getHidden() == false && 
+									(other.getCurX() == curX && other.getCurY() == curY)){
+								resume(preX, preY, preDirection, preHidden);
+								return false;
+							}
+						}
+					}
+
 					resume(preX, preY, preDirection, preHidden);
 					return true;
 				}
-			}
-		}
 
-		if (action == 7){
-			//check it has enough power to do the action
-			if (this.getPower() < NeededPower.SHOW) {
-				this.setPowerInfo("You have not enough power to execute this action!");
-				return false;
-			}else{
-				if (this.getHidden() == false){
-					//it is not hidden
-					resume(preX, preY, preDirection, preHidden);
+			}
+
+			if (action == 10) {
+				//check it has enough power to do the action
+				if (this.getPower() < NeededPower.ATTACK) {
+					this.setPowerInfo("You have not enough power to execute this action!");
 					return false;
 				}else {
-					//it is hidden, but it cannot show if there is a samurai, which is not hidden, in the block
-					for (int i = 0; i < Game.PLAYER_NUM; ++i){
-						Samurai other = game.samurais[i];
-						if (other.getHidden() == false && 
-								(other.getCurX() == curX && other.getCurY() == curY)){
+					switch (this.weapon) {
+					case 0:
+						if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13))) {
+							resume(preX, preY, preDirection, preHidden);
+							return true;
+						}else {
+							resume(preX, preY, preDirection, preHidden);
+							return false;
+						}
+					case 1:
+						if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13)) || 
+								canHit(getHittenSamurai(14)) || canHit(getHittenSamurai(15))) {
+							resume(preX, preY, preDirection, preHidden);
+							return true;
+						}else {
+							resume(preX, preY, preDirection, preHidden);
+							return false;
+						}
+					case 2:
+						if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13)) || 
+								canHit(getHittenSamurai(14)) || canHit(getHittenSamurai(15)) || 
+								canHit(getHittenSamurai(16)) || canHit(getHittenSamurai(17))) {
+							resume(preX, preY, preDirection, preHidden);
+							return true;
+						}else {
 							resume(preX, preY, preDirection, preHidden);
 							return false;
 						}
 					}
 				}
-				
-				resume(preX, preY, preDirection, preHidden);
-				return true;
 			}
-
+			return false;	
 		}
-
-		if (action == 10) {
-			//check it has enough power to do the action
-			if (this.getPower() < NeededPower.ATTACK) {
-				this.setPowerInfo("You have not enough power to execute this action!");
-				return false;
-			}else {
-				switch (this.weapon) {
-				case 0:
-					if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13))) {
-						resume(preX, preY, preDirection, preHidden);
-						return true;
-					}else {
-						resume(preX, preY, preDirection, preHidden);
-						return false;
-					}
-				case 1:
-					if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13)) || 
-							canHit(getHittenSamurai(14)) || canHit(getHittenSamurai(15))) {
-						resume(preX, preY, preDirection, preHidden);
-						return true;
-					}else {
-						resume(preX, preY, preDirection, preHidden);
-						return false;
-					}
-				case 2:
-					if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13)) || 
-							canHit(getHittenSamurai(14)) || canHit(getHittenSamurai(15)) || 
-							canHit(getHittenSamurai(16)) || canHit(getHittenSamurai(17))) {
-						resume(preX, preY, preDirection, preHidden);
-						return true;
-					}else {
-						resume(preX, preY, preDirection, preHidden);
-						return false;
-					}
-				}
-			}
-		}
-		return false;	
 	}
 
 	/**
@@ -686,11 +527,21 @@ public abstract class Samurai {
 			}
 		}
 
-		int value = mapField[this.getCurY()][this.getCurX()];
 		//can't move to other samurais' home
-		if (value == Configure.HOMEOFCAP || value == Configure.HOMEOFIRONMAN) {
-			return false;
+		for (int i = 0; i < Game.PLAYER_NUM; i++) {
+			if ((this.getCurX() == game.samurais[i].getHomeX() &&
+					this.getCurY() == game.samurais[i].getHomeY())){
+				if (this.getWeapon() == game.samurais[i].getWeapon() && this.getSide() == game.samurais[i].getSide()) {
+					//this one is the caller 
+					return true;
+				}else {
+					//this isn't its home
+					return false;
+				}
+			}
 		}
+
+		int value = mapField[this.getCurY()][this.getCurX()];
 		//cannot to the block existing mount or tree
 		if (value == Configure.MOUN || value == Configure.TREE) {
 			return false;
@@ -782,6 +633,233 @@ public abstract class Samurai {
 	}
 	
 	/**
+	 * set this samurai's attack range
+	 * before you do this method setHitRange()
+	 * you need to reset this samurai's preHitRange (in game.hitRangeField[2weapon + side]) to rootHitRangeField
+	 */
+	public void setHitRange() {
+		switch (this.getWeapon()) {
+		case 0:setHitRange0();break;
+		case 1:setHitRange1();break;
+		case 2:setHitRange2();break;
+		}
+	}
+	
+	private void setHitRange0() {
+		//reset it first
+		game.hitRangeField[2 * this.weapon + this.side] = Game.rootHitRangeField;
+		
+		switch (this.getDirection()) {
+		case WEST:
+			for (int i = 1; i <= 3; i++) {
+				if (!game.isSpecial(this.getWest(i).getX(), this.getWest(i).getY()) && 
+						game.isReachable(this.getWest(i).getX(), this.getWest(i).getY())) {
+					game.hitRangeField[2 * this.weapon + this.side][this.getWest(i).getY()][this.getWest(i).getX()] 
+							= this.hitRangeFieldNum;
+				}
+			}break;
+		case EAST:
+			for (int i = 1; i <= 3; i++) {
+				if (!game.isSpecial(this.getEast(i).getX(), this.getEast(i).getY()) && 
+						game.isReachable(this.getEast(i).getX(), this.getEast(i).getY())) {
+					game.hitRangeField[2 * this.weapon + this.side][this.getEast(i).getY()][this.getEast(i).getX()] 
+							= this.hitRangeFieldNum;
+				}
+			}break;
+		case NORTH:
+			for (int i = 1; i <= 3; i++) {
+				if (!game.isSpecial(this.getNorth(i).getX(), this.getNorth(i).getY()) && 
+						game.isReachable(this.getNorth(i).getX(), this.getNorth(i).getY())) {
+					game.hitRangeField[2 * this.weapon + this.side][this.getNorth(i).getY()][this.getNorth(i).getX()] 
+							= this.hitRangeFieldNum;
+				}
+			}break;
+		case SOUTH:
+			for (int i = 1; i <= 3; i++) {
+				if (!game.isSpecial(this.getSouth(i).getX(), this.getSouth(i).getY()) && 
+						game.isReachable(this.getSouth(1).getX(), this.getSouth(1).getY())) {
+					game.hitRangeField[2 * this.weapon + this.side][this.getSouth(i).getY()][this.getSouth(i).getX()] 
+							= this.hitRangeFieldNum;
+				}
+			}break;
+		}
+	}
+	
+	private void setHitRange1() {
+		//reset it first
+		game.hitRangeField[2 * this.weapon + this.side] = Game.rootHitRangeField;
+		
+		switch (this.getDirection()) {
+		case WEST:
+			for (int i = 1; i <= 2; i++) {
+				if (!game.isSpecial(this.getSouth(i).getX(), this.getSouth(i).getY()) && 
+						game.isReachable(this.getSouth(i).getX(), this.getSouth(i).getY())) {
+					game.hitRangeField[2 * this.weapon + this.side][this.getSouth(i).getY()][this.getSouth(i).getX()] 
+							= this.hitRangeFieldNum;
+				}
+				if (!game.isSpecial(this.getWest(i).getX(), this.getWest(i).getY()) && 
+						game.isReachable(this.getWest(i).getX(), this.getWest(i).getY())) {
+					game.hitRangeField[2 * this.weapon + this.side][this.getWest(i).getY()][this.getWest(i).getX()] 
+							= this.hitRangeFieldNum;
+				}
+			}
+			if (!game.isSpecial(this.getSouthWest(1).getX(), this.getSouthWest(1).getY()) && 
+					game.isReachable(this.getSouthWest(1).getX(), this.getSouthWest(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getSouthWest(1).getY()][this.getSouthWest(1).getX()] 
+						= this.hitRangeFieldNum;
+			}
+			break;
+		case EAST:
+			for (int i = 1; i <= 2; i++) {
+				if (!game.isSpecial(this.getNorth(i).getX(), this.getNorth(i).getY()) && 
+						game.isReachable(this.getNorth(i).getX(), this.getNorth(i).getY())) {
+					game.hitRangeField[2 * this.weapon + this.side][this.getNorth(i).getY()][this.getNorth(i).getX()] 
+							= this.hitRangeFieldNum;
+				}
+				if (!game.isSpecial(this.getEast(i).getX(), this.getEast(i).getY()) && 
+						game.isReachable(this.getEast(i).getX(), this.getEast(i).getY())) {
+					game.hitRangeField[2 * this.weapon + this.side][this.getEast(i).getY()][this.getEast(i).getX()] 
+							= this.hitRangeFieldNum;
+				}
+			}
+			if (!game.isSpecial(this.getNorthEast(1).getX(), this.getNorthEast(1).getY()) && 
+					game.isReachable(this.getNorthEast(1).getX(), this.getNorthEast(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getNorthEast(1).getY()][this.getNorthEast(1).getX()] 
+						= this.hitRangeFieldNum;
+			}
+			break;
+		case NORTH:
+			for (int i = 1; i <= 2; i++) {
+				if (!game.isSpecial(this.getNorth(i).getX(), this.getNorth(i).getY()) && 
+						game.isReachable(this.getNorth(i).getX(), this.getNorth(i).getY())) {
+					game.hitRangeField[2 * this.weapon + this.side][this.getNorth(i).getY()][this.getNorth(i).getX()] 
+							= this.hitRangeFieldNum;
+				}
+				if (!game.isSpecial(this.getWest(i).getX(), this.getWest(i).getY()) && 
+						game.isReachable(this.getWest(i).getX(), this.getWest(i).getY())) {
+					game.hitRangeField[2 * this.weapon + this.side][this.getWest(i).getY()][this.getWest(i).getX()] 
+							= this.hitRangeFieldNum;
+				}
+			}
+			if (!game.isSpecial(this.getNorthWest(1).getX(), this.getNorthWest(1).getY()) && 
+					game.isReachable(this.getNorthWest(1).getX(), this.getNorthWest(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getNorthWest(1).getY()][this.getNorthWest(1).getX()] 
+						= this.hitRangeFieldNum;
+			}
+			break;
+		case SOUTH:
+			for (int i = 1; i <= 2; i++) {
+				if (!game.isSpecial(this.getSouth(i).getX(), this.getSouth(i).getY()) && 
+						game.isReachable(this.getSouth(i).getX(), this.getSouth(i).getY())) {
+					game.hitRangeField[2 * this.weapon + this.side][this.getSouth(i).getY()][this.getSouth(i).getX()] 
+							= this.hitRangeFieldNum;
+				}
+				if (!game.isSpecial(this.getEast(i).getX(), this.getEast(i).getY()) && 
+						game.isReachable(this.getEast(i).getX(), this.getEast(i).getY())) {
+					game.hitRangeField[2 * this.weapon + this.side][this.getEast(i).getY()][this.getEast(i).getX()] 
+							= this.hitRangeFieldNum;
+				}
+			}
+			if (!game.isSpecial(this.getSouthEast(1).getX(), this.getSouthEast(1).getY()) && 
+					game.isReachable(this.getSouthEast(1).getX(), this.getSouthEast(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getSouthEast(1).getY()][this.getSouthEast(1).getX()] 
+						= this.hitRangeFieldNum;
+			}
+			break;
+		}
+	}
+	
+	private void setHitRange2() {
+		//reset it first
+		game.hitRangeField[2 * this.weapon + this.side] = Game.rootHitRangeField;
+		
+		if (!game.isSpecial(this.getSouthEast(1).getX(), this.getSouthEast(1).getY()) && 
+				game.isReachable(this.getSouthEast(1).getX(), this.getSouthEast(1).getY())) {
+			game.hitRangeField[2 * this.weapon + this.side][this.getSouthEast(1).getY()][this.getSouthEast(1).getX()] 
+					= this.hitRangeFieldNum;
+		}
+		if (!game.isSpecial(this.getSouthWest(1).getX(), this.getSouthWest(1).getY()) && 
+				game.isReachable(this.getSouthWest(1).getX(), this.getSouthWest(1).getY())) {
+			game.hitRangeField[2 * this.weapon + this.side][this.getSouthWest(1).getY()][this.getSouthWest(1).getX()] 
+					= this.hitRangeFieldNum;
+		}
+		if (!game.isSpecial(this.getNorthWest(1).getX(), this.getNorthWest(1).getY()) && 
+				game.isReachable(this.getNorthWest(1).getX(), this.getNorthWest(1).getY())) {
+			game.hitRangeField[2 * this.weapon + this.side][this.getNorthWest(1).getY()][this.getNorthWest(1).getX()] 
+					= this.hitRangeFieldNum;
+		}
+		if (!game.isSpecial(this.getNorthEast(1).getX(), this.getNorthEast(1).getY()) && 
+				game.isReachable(this.getNorthEast(1).getX(), this.getNorthEast(1).getY())) {
+			game.hitRangeField[2 * this.weapon + this.side][this.getNorthEast(1).getY()][this.getNorthEast(1).getX()] 
+					= this.hitRangeFieldNum;
+		}
+		switch (this.getDirection()) {
+		case WEST:
+			if (!game.isSpecial(this.getWest(1).getX(), this.getWest(1).getY()) && 
+					game.isReachable(this.getWest(1).getX(), this.getWest(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getWest(1).getY()][this.getWest(1).getX()] 
+						= this.hitRangeFieldNum;
+			}
+			if (!game.isSpecial(this.getNorth(1).getX(), this.getNorth(1).getY()) && 
+					game.isReachable(this.getNorth(1).getX(), this.getNorth(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getNorth(1).getY()][this.getNorth(1).getX()] 
+						= this.hitRangeFieldNum;
+			}if (!game.isSpecial(this.getSouth(1).getX(), this.getSouth(1).getY()) && 
+					game.isReachable(this.getSouth(1).getX(), this.getSouth(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getSouth(1).getY()][this.getSouth(1).getX()] 
+						= this.hitRangeFieldNum;
+			}break;
+		case EAST:
+			if (!game.isSpecial(this.getEast(1).getX(), this.getEast(1).getY()) && 
+					game.isReachable(this.getEast(1).getX(), this.getEast(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getEast(1).getY()][this.getEast(1).getX()] 
+						= this.hitRangeFieldNum;
+			}
+			if (!game.isSpecial(this.getNorth(1).getX(), this.getNorth(1).getY()) && 
+					game.isReachable(this.getNorth(1).getX(), this.getNorth(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getNorth(1).getY()][this.getNorth(1).getX()] 
+						= this.hitRangeFieldNum;
+			}if (!game.isSpecial(this.getSouth(1).getX(), this.getSouth(1).getY()) && 
+					game.isReachable(this.getSouth(1).getX(), this.getSouth(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getSouth(1).getY()][this.getSouth(1).getX()]
+						= this.hitRangeFieldNum;
+			}break;
+		case NORTH:
+			if (!game.isSpecial(this.getWest(1).getX(), this.getWest(1).getY()) && 
+					game.isReachable(this.getWest(1).getX(), this.getWest(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getWest(1).getY()][this.getWest(1).getX()] 
+						= this.hitRangeFieldNum;
+			}
+			if (!game.isSpecial(this.getEast(1).getX(), this.getEast(1).getY()) && 
+					game.isReachable(this.getEast(1).getX(), this.getEast(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getEast(1).getY()][this.getEast(1).getX()] 
+						= this.hitRangeFieldNum;
+			}
+			if (!game.isSpecial(this.getNorth(1).getX(), this.getNorth(1).getY()) && 
+					game.isReachable(this.getNorth(1).getX(), this.getNorth(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getNorth(1).getY()][this.getNorth(1).getX()] 
+						= this.hitRangeFieldNum;
+			}break;
+		case SOUTH:
+			if (!game.isSpecial(this.getWest(1).getX(), this.getWest(1).getY()) && 
+					game.isReachable(this.getWest(1).getX(), this.getWest(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getWest(1).getX()][this.getWest(1).getY()] 
+						= this.hitRangeFieldNum;
+			}
+			if (!game.isSpecial(this.getEast(1).getX(), this.getEast(1).getY()) && 
+					game.isReachable(this.getEast(1).getX(), this.getEast(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getEast(1).getX()][this.getEast(1).getY()] 
+						= this.hitRangeFieldNum;
+			}
+			if (!game.isSpecial(this.getSouth(1).getX(), this.getSouth(1).getY()) && 
+					game.isReachable(this.getSouth(1).getX(), this.getSouth(1).getY())) {
+				game.hitRangeField[2 * this.weapon + this.side][this.getSouth(1).getX()][this.getSouth(1).getY()] 
+						= this.hitRangeFieldNum;
+			}break;
+		}
+	}
+	
+	/**
 	 * to check whether the samurai can hit the hittenSamurai
 	 * @param hittenSamurai
 	 * @return
@@ -869,6 +947,21 @@ public abstract class Samurai {
 			return false;
 		}else {
 			return true;
+		}
+	}
+	
+	/**
+	 * occupy all blocks that are able to be attacked by this samurai
+	 */
+	private void occupy() {
+		int[][] thisHitRangeField = game.hitRangeField[2 * weapon + side];
+		
+		for (int i = 0; i < thisHitRangeField.length; i++) {
+			for (int j = 0; j < thisHitRangeField[0].length; j++) {
+				if (thisHitRangeField[i][j] == this.hitRangeFieldNum) {
+					game.scoreField[i][j] = this.manor;
+				}
+			}
 		}
 	}
 	
@@ -1040,8 +1133,7 @@ public abstract class Samurai {
 		}
 		return hittenSamurai;
 	}
-
-
+	
 	/**
 	 * get the Point of different direction
 	 * to help the method hittenSamuraiXXOfX()

@@ -14,8 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-//�������
-public class HelpPanel extends JPanel {
+public class HelpPanel extends BackGroundPanel {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -28,10 +27,10 @@ public class HelpPanel extends JPanel {
 		this.setSize(960,720);
 		
 
-		JLabel helpBt = new JLabel("HELP");
-		helpBt.setHorizontalAlignment(SwingConstants.CENTER);
-		helpBt.setBounds(393, 63, 108, 39);
-		add(helpBt);
+//		JLabel helpBt = new JLabel("HELP");
+//		helpBt.setHorizontalAlignment(SwingConstants.CENTER);
+//		helpBt.setBounds(393, 63, 108, 39);
+//		add(helpBt);
 		
 //		JTextArea helpText = new JTextArea();
 //		helpText.setBounds(253, 148, 394, 448);
@@ -39,7 +38,7 @@ public class HelpPanel extends JPanel {
 //		
 		JButton backBt = new JButton(new ImageIcon(this.getClass().getResource("/cn/picture/return.png")));
 		backBt.addMouseListener(new MouseAdapter() {
-			//���back��ť֮���˻ص�������
+			
 			public void mouseClicked(MouseEvent e) {
 				StartPanel.getCard().show(StartPanel.getCardPanel(), "mainPane");
 			}
@@ -52,8 +51,8 @@ public class HelpPanel extends JPanel {
 				backBt.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/return.png")));
 			}
 		});
-		backBt.setBounds(10, 10, 100, 70);
-	    backBt.setBackground(Color.BLACK);
+		backBt.setBounds(500, 500, 120, 60);
+	    backBt.setContentAreaFilled(false);
 	    backBt.setBorderPainted(false);
 		this.add(backBt);
 		
@@ -61,26 +60,12 @@ public class HelpPanel extends JPanel {
 
 
 		
-	
 	@Override
-	public void paint(Graphics g) {
-		// TODO Auto-generated method stub
-		super.paint(g);
-		BufferedImage back;
-		BufferedImage backBt;
-		try {
-			back = ImageIO.read(this.getClass().getResource("/cn/picture/background2.jpg"));
-			backBt=ImageIO.read(this.getClass().getResource("/cn/picture/return.png"));
-			g.drawImage(back, 0, 0, null);
-			g.drawImage(backBt,10,10,null);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		
+	
 	}
-
-
 
 
 

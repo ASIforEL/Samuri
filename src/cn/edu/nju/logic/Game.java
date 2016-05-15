@@ -9,43 +9,60 @@ import cn.edu.nju.panels.StartPanel;
 public class Game implements Runnable{
 	public static final int PLAYER_NUM = 6;
 	public static final int TOTAL_TURNS = 1008;
-	
+	public static int totalScore;
+	public int teamCapScore;
+	public int teamIronManScore;
+
 	public Samurai[] samurais = new Samurai[6];
 	public GameField gameField;
 
 	public int curSamuraiNum = 0;					//the current controlled samurai
 	public int[][] map;								//gameField map
 	public int[][] samuraiField;					//samurais and their attackable blocks
-	
+	public int[][][] hitRangeField = Configure.hitRangeField;
+	public int[][] scoreField = Configure.scoreField;
+
+	public static int[][] rootHitRangeField;
+
 	public Game(GameField gameField) {
 		this.gameField = gameField;
-		
+
 		map = Configure.mapField[MapSelectPanel.numOfMap - 1];		
 		samuraiField = Configure.samuraiField;
-		
+		rootHitRangeField = getHitRangeField(map);
+		scoreField = getHitRangeField(map);
+
+		//initialize every samurai's hitRangeField to the root one
+		hitRangeField[0] = rootHitRangeField;
+		hitRangeField[1] = rootHitRangeField;
+		hitRangeField[2] = rootHitRangeField;
+		hitRangeField[3] = rootHitRangeField;
+		hitRangeField[4] = rootHitRangeField;
+		hitRangeField[5] = rootHitRangeField;
+
 		//the even number represents TeamCap, odd number represents TeamIronMan
 		//initialize them in their run order
-		samurais[0] = new CaptainAmerica(this);
-		samurais[1] = new IronMan(this);
-		samurais[2] = new Hulk(this);
-		samurais[3] = new BlackWidow(this);
-		samurais[4] = new Hawkeye(this);
-		samurais[5] = new SpiderMan(this);
-		
+		samurais[0] = new CaptainAmerica(this, gameField);
+		samurais[1] = new IronMan(this, gameField);
+		samurais[2] = new Hulk(this, gameField);
+		samurais[3] = new BlackWidow(this, gameField);
+		samurais[4] = new Hawkeye(this, gameField);
+		samurais[5] = new SpiderMan(this, gameField);
+
 		samurais[0].mapField = this.map;
 		samurais[1].mapField = this.map;
 		samurais[2].mapField = this.map;
 		samurais[3].mapField = this.map;
 		samurais[4].mapField = this.map;
 		samurais[5].mapField = this.map;
-		
+
 		samurais[0].samuraiField = this.samuraiField;
 		samurais[1].samuraiField = this.samuraiField;
 		samurais[2].samuraiField = this.samuraiField;
 		samurais[3].samuraiField = this.samuraiField;
 		samurais[4].samuraiField = this.samuraiField;
 		samurais[5].samuraiField = this.samuraiField;
-		
+
 		System.out.println("Finish Initializing the game");
 	}
 
@@ -71,7 +88,7 @@ public class Game implements Runnable{
 			samurais[curSamuraiNum].setCountroled(true);
 			samurais[curSamuraiNum].doAction(action);
 			gameField.repaint();
-			
+
 			System.out.println(curTurn);
 			System.out.println(samurais[curSamuraiNum].getCurX());
 			System.out.println(samurais[curSamuraiNum].getCurY());
@@ -81,7 +98,6 @@ public class Game implements Runnable{
 			System.out.println();
 			//repaint
 		}
-
 	}
 
 	/**
@@ -102,7 +118,8 @@ public class Game implements Runnable{
 			}
 		}
 		if ((numOfDeadCap == PLAYER_NUM/2 && numOfDeadIronMan < PLAYER_NUM/2) ||
-				(numOfDeadIronMan == PLAYER_NUM/2 && numOfDeadCap < PLAYER_NUM/2)){
+				(numOfDeadIronMan == PLAYER_NUM/2 && numOfDeadCap < PLAYER_NUM/2) || 
+				teamCapScore >= totalScore * 0.8 || teamIronManScore >= totalScore * 0.8){
 			return true;
 		}else {
 			return false;
@@ -121,8 +138,10 @@ public class Game implements Runnable{
 				if (samurais[i].getSide() == 1) numOfDeadIronMan++;
 			}
 		}
-		if ((numOfDeadCap == PLAYER_NUM/2 && numOfDeadIronMan < PLAYER_NUM/2)) return 1;
-		if ((numOfDeadIronMan == PLAYER_NUM/2 && numOfDeadCap < PLAYER_NUM/2)) return 0;
+		if ((numOfDeadCap == PLAYER_NUM/2 && numOfDeadIronMan < PLAYER_NUM/2) || 
+				teamCapScore >= totalScore * 0.8) return 1;
+		if ((numOfDeadIronMan == PLAYER_NUM/2 && numOfDeadCap < PLAYER_NUM/2) || 
+				teamIronManScore >= totalScore * 0.8) return 0;
 		return -1;
 	}
 
@@ -180,11 +199,33 @@ public class Game implements Runnable{
 	}
 	
 	/**
+	 * get the root one to reset when change happens
+	 * @param map
+	 * @return the rootHitRangeField
+	 */
+	private int[][] getHitRangeField(int[][] map) {
+		int[][] hitRangeField = new int[12][12];
+		for (int i = 0; i < map.length; i++) {
+			for (int j = 0; j < map[0].length; j++) {
+				if (map[i][j] != 1) {
+					//this block cannot be hitted
+					hitRangeField[i][j] = -1;
+				}else {
+					//initializing it all 0
+					hitRangeField[i][j] = 0;
+					totalScore++;
+				}
+			}
+		}
+		return hitRangeField;
+	}
+	
+	/**
 	 * 
 	 * @param input
 	 * @return actual actions in the way of String, spaced by the " "
 	 */
-	public String getAction(String input) {
+	public String getActions(String input) {
 		String inputActions = "";
 		if (input.startsWith("# ")) {
 			inputActions = input.substring(2, input.length());
