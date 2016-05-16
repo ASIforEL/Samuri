@@ -19,8 +19,8 @@ public class IronMan extends Samurai{
 		this.setCurX(this.getHomeX());
 		this.setCurY(this.getHomeY());
 		System.out.println("Initializing the IronMan");
-
-		samuraiFieldNum = Configure.IRON_MAN;
+		
+		homeSamuraiFieldNum = Configure.IRON_MAN * 100 + 1;
 		hitRangeFieldNum = Configure.IRON_MAN_ATTACK;
 		manor = this.getSide() + 1;
 

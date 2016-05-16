@@ -17,7 +17,7 @@ public class ServerListener implements Runnable {
 		try {
 			ServerSocket serverSocket = new ServerSocket();
 
-			serverSocket.bind(new InetSocketAddress("172.26.197.99",8080)); 
+			serverSocket.bind(new InetSocketAddress("127.0.0.1",8080)); 
 			while (true) {
 				//block
 				socket = serverSocket.accept();

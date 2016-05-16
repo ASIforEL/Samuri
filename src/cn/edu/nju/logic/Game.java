@@ -16,9 +16,9 @@ public class Game implements Runnable{
 	public Samurai[] samurais = new Samurai[6];
 	public GameField gameField;
 
-	public int curSamuraiNum = 0;					//the current controlled samurai
-	public int[][] map;								//gameField map
-	public int[][] samuraiField;					//samurais and their attackable blocks
+	public int curSamuraiNum = 0;										//the current controlled samurai
+	public int[][] map;													//gameField map
+	public int[][][] samuraiField = new int[7][12][12];					//samurais and their attackable blocks
 	public int[][][] hitRangeField = Configure.hitRangeField;
 	public int[][] scoreField = Configure.scoreField;
 
@@ -27,12 +27,28 @@ public class Game implements Runnable{
 	public Game(GameField gameField) {
 		this.gameField = gameField;
 
-		map = Configure.mapField[MapSelectPanel.numOfMap - 1];		
-		samuraiField = Configure.samuraiField;
+		map = Configure.mapField[MapSelectPanel.numOfMap - 1];	
+		
+		//to ensure the initializing one is all showing out
+		for (int i = 0; i < 12; i++) {
+			for (int j = 0; j < 12; j++) {
+				samuraiField[0][i][j] = Configure.samuraiField[i][j];	
+			}
+		}
+		//to empty the latter hidden ones
+		for (int k = 1; k < 7; k++) {
+			for (int i = 0; i < 12; i++) {
+				for (int j = 0; j < 12; j++) {
+					samuraiField[k][i][j] = 0;
+				}
+			}
+		}
+		
+		
 		rootHitRangeField = getHitRangeField(map);
 		scoreField = getHitRangeField(map);
-		Configure.scoreField = scoreField;
 		
+		Configure.scoreField = scoreField;
 		totalScore = getTotalScore(rootHitRangeField);
 
 		//initialize every samurai's hitRangeField to the root one
@@ -60,12 +76,12 @@ public class Game implements Runnable{
 		samurais[4].mapField = this.map;
 		samurais[5].mapField = this.map;
 
-		samurais[0].samuraiField = this.samuraiField;
-		samurais[1].samuraiField = this.samuraiField;
-		samurais[2].samuraiField = this.samuraiField;
-		samurais[3].samuraiField = this.samuraiField;
-		samurais[4].samuraiField = this.samuraiField;
-		samurais[5].samuraiField = this.samuraiField;
+		samurais[0].samuraiField = this.samuraiField[0];
+		samurais[1].samuraiField = this.samuraiField[0];
+		samurais[2].samuraiField = this.samuraiField[0];
+		samurais[3].samuraiField = this.samuraiField[0];
+		samurais[4].samuraiField = this.samuraiField[0];
+		samurais[5].samuraiField = this.samuraiField[0];
 		
 		samurais[0].scoreField = this.scoreField;
 		samurais[1].scoreField = this.scoreField;
@@ -86,7 +102,7 @@ public class Game implements Runnable{
 			case 0:winner = "TeamCap";break;
 			case 1:winner = "TeampIronMan";break;
 			}
-			JOptionPane.showMessageDialog(null, winner + "has won this game!");
+			JOptionPane.showMessageDialog(null, winner + " has won this game!");
 			//stop the game & back to the start UI
 			StartPanel.getCard().show(StartPanel.getCardPanel(), "mainPane");
 		}else if (curTurn == TOTAL_TURNS && cheakWin() == false) {
@@ -115,7 +131,7 @@ public class Game implements Runnable{
 //			printRootOne();
 //			System.out.println();
 //			printHitRange();
-//			System.out.println();
+			System.out.println();
 			//repaint
 		}
 	}

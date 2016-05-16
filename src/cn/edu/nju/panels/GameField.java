@@ -1,14 +1,19 @@
 package cn.edu.nju.panels;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import cn.edu.nju.gameMusic.musicThread;
 import cn.edu.nju.gameMusic.myAudioPlayer;
@@ -19,7 +24,6 @@ import cn.edu.nju.logic.Game;
 import cn.edu.nju.logic.Hawkeye;
 import cn.edu.nju.logic.Hulk;
 import cn.edu.nju.logic.IronMan;
-import cn.edu.nju.logic.Samurai;
 import cn.edu.nju.logic.SpiderMan;
 
 public class GameField extends BackGroundPanel {
@@ -39,25 +43,21 @@ public class GameField extends BackGroundPanel {
 	private BufferedImage transfer36;
 	private BufferedImage transfer37;
 	private BufferedImage transfer38;
-	private BufferedImage hero11;
-	private BufferedImage hero12;
-	private BufferedImage hero13;
-	private BufferedImage hero21;
-	private BufferedImage hero22;
-	private BufferedImage hero23;
+
 	private BufferedImage range1;
 	private BufferedImage range2;
 	private BufferedImage score1;
 	private BufferedImage score2;
 	private BufferedImage flag1;
 	private BufferedImage flag2;
-	private BufferedImage hidehero11;
-	private BufferedImage hidehero12;
-	private BufferedImage hidehero13;
-	private BufferedImage hidehero21;
-	private BufferedImage hidehero22;
-	private BufferedImage hidehero23;
-	
+
+	private BufferedImage hero11up, hero11down, hero11left, hero11right, hide11up, hide11down, hide11left, hide11right;
+	private BufferedImage hero12up, hero12down, hero12left, hero12right, hide12up, hide12down, hide12left, hide12right;
+	private BufferedImage hero13up, hero13down, hero13left, hero13right, hide13up, hide13down, hide13left, hide13right;
+	private BufferedImage hero21up, hero21down, hero21left, hero21right, hide14up, hide21down, hide21left, hide21right;
+	private BufferedImage hero22up, hero22down, hero22left, hero22right, hide15up, hide22down, hide22left, hide22right;
+	private BufferedImage hero23up, hero23down, hero23left, hero23right, hide16up, hide23down, hide23left, hide23right;
+
 	public Game game = new Game(this);
 
 	public CaptainAmerica team11 = (CaptainAmerica) game.samurais[0];
@@ -69,38 +69,39 @@ public class GameField extends BackGroundPanel {
 
 	public static int curTurn = 0;
 	public static int action;
-	public static String actionString = "";		//exchange the string to connect
+	public static String actionString = ""; // exchange the string to connect
+	
+	protected JPanel settingsPanel;
 
 	public GameField() {
 
 		addJL();
 		initImag();
+		addListener();
 
+	}
+
+	private void addListener() {
 		addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
-				musicThread hero =  new musicThread();
-				musicThread attackOfHero =  new musicThread();
-				if(game.turn2Samurai(curTurn)==0){
+				musicThread hero = new musicThread();
+				musicThread attackOfHero = new musicThread();
+				if (game.turn2Samurai(curTurn) == 0) {
 					hero.creatMT(myAudioPlayer.walkOfCaptainAmerica, 1);
 					attackOfHero.creatMT(myAudioPlayer.attackOfCaptainAmerica, 1);
-				}
-				else if(game.turn2Samurai(curTurn)==1){
+				} else if (game.turn2Samurai(curTurn) == 1) {
 					hero.creatMT(myAudioPlayer.walkOfIronMan, 1);
 					attackOfHero.creatMT(myAudioPlayer.attackOfIornMan, 1);
-				}
-				else if(game.turn2Samurai(curTurn)==2){
+				} else if (game.turn2Samurai(curTurn) == 2) {
 					hero.creatMT(myAudioPlayer.walkOfHulk, 1);
 					attackOfHero.creatMT(myAudioPlayer.attackOfHulk, 1);
-				}
-				else if(game.turn2Samurai(curTurn)==3){
+				} else if (game.turn2Samurai(curTurn) == 3) {
 					hero.creatMT(myAudioPlayer.walkOfBlackWdiow, 1);
 					attackOfHero.creatMT(myAudioPlayer.attackOfBlackWdiow, 1);
-				}
-				else if(game.turn2Samurai(curTurn)==4){
+				} else if (game.turn2Samurai(curTurn) == 4) {
 					hero.creatMT(myAudioPlayer.walkOfHawkeye, 1);
 					attackOfHero.creatMT(myAudioPlayer.attackOfHawkeye, 1);
-				}
-				else if(game.turn2Samurai(curTurn)==5){
+				} else if (game.turn2Samurai(curTurn) == 5) {
 					hero.creatMT(myAudioPlayer.walkOfSpiderMan, 1);
 					attackOfHero.creatMT(myAudioPlayer.attackOfSpiderMan, 1);
 				}
@@ -109,64 +110,142 @@ public class GameField extends BackGroundPanel {
 				case KeyEvent.VK_A:
 					action = 1;
 					execute();
-					if(tempPower>1&&tempPower<=7){
-					   hero.start();
-					   hero.stop();
+					if (tempPower > 1 && tempPower <= 7) {
+						hero.start();
+						hero.stop();
+					}
+					break;
+				case KeyEvent.VK_LEFT:
+					action = 1;
+					execute();
+					if (tempPower > 1 && tempPower <= 7) {
+						hero.start();
+						hero.stop();
 					}
 					break;
 				case KeyEvent.VK_D:
 					action = 2;
 					execute();
-					if(tempPower>1&&tempPower<=7){
-						   hero.start();
-						   hero.stop();
-						}
+					if (tempPower > 1 && tempPower <= 7) {
+						hero.start();
+						hero.stop();
+					}
+					break;
+				case KeyEvent.VK_RIGHT:
+					action = 2;
+					execute();
+					if (tempPower > 1 && tempPower <= 7) {
+						hero.start();
+						hero.stop();
+					}
 					break;
 				case KeyEvent.VK_W:
 					action = 3;
 					execute();
-					if(tempPower>1&&tempPower<=7){
-						   hero.start();
-						   hero.stop();
-						}
+					if (tempPower > 1 && tempPower <= 7) {
+						hero.start();
+						hero.stop();
+					}
+					break;
+				case KeyEvent.VK_UP:
+					action = 3;
+					execute();
+					if (tempPower > 1 && tempPower <= 7) {
+						hero.start();
+						hero.stop();
+					}
 					break;
 				case KeyEvent.VK_S:
 					action = 4;
 					execute();
-					if(tempPower>1&&tempPower<=7){
-						   hero.start();
-						   hero.stop();
-						}
+					if (tempPower > 1 && tempPower <= 7) {
+						hero.start();
+						hero.stop();
+					}
+					break;
+				case KeyEvent.VK_DOWN:
+					action = 4;
+					execute();
+					if (tempPower > 1 && tempPower <= 7) {
+						hero.start();
+						hero.stop();
+					}
 					break;
 				case KeyEvent.VK_H:
 					action = 6;
 					execute();
-					if(tempPower>0){
-					musicThread hide =  new musicThread();
-					hide.creatMT(myAudioPlayer.hideMusic,1);
-					hide.start();
-					hide.stop();
+					if (tempPower > 0) {
+						musicThread hide = new musicThread();
+						hide.creatMT(myAudioPlayer.hideMusic, 1);
+						hide.start();
+						hide.stop();
+					}
+					break;
+				case KeyEvent.VK_C:
+					action = 6;
+					execute();
+					if (tempPower > 0) {
+						musicThread hide = new musicThread();
+						hide.creatMT(myAudioPlayer.hideMusic, 1);
+						hide.start();
+						hide.stop();
+					}
+					break;
+				case KeyEvent.VK_K:
+					action = 6;
+					execute();
+					if (tempPower > 0) {
+						musicThread hide = new musicThread();
+						hide.creatMT(myAudioPlayer.hideMusic, 1);
+						hide.start();
+						hide.stop();
 					}
 					break;
 				case KeyEvent.VK_B:
 					action = 7;
 					execute();
-					
+
+					break;
+				case KeyEvent.VK_V:
+					action = 7;
+					execute();
+
+					break;
+				case KeyEvent.VK_M:
+					action = 7;
+					execute();
+
 					break;
 				case KeyEvent.VK_J:
 					action = 10;
 					execute();
-					if(tempPower>3){
-					attackOfHero.start();
-					attackOfHero.stop();
+					if (tempPower > 3) {
+						attackOfHero.start();
+						attackOfHero.stop();
+					}
+					break;
+				case KeyEvent.VK_F:
+					action = 10;
+					execute();
+					if (tempPower > 3) {
+						attackOfHero.start();
+						attackOfHero.stop();
+					}
+					break;
+				case KeyEvent.VK_L:
+					action = 10;
+					execute();
+					if (tempPower > 3) {
+						attackOfHero.start();
+						attackOfHero.stop();
 					}
 					break;
 				case KeyEvent.VK_SPACE:
 					action = 0;
-				//transfer the actionString
+					// transfer the actionString
 					actionString = "";
 					execute();
-					musicThread space  =  new musicThread();
+					musicThread space = new musicThread();
 					space.creatMT(myAudioPlayer.spaceMusic, 1);
 					space.start();
 					space.stop();
@@ -215,6 +294,76 @@ public class GameField extends BackGroundPanel {
 		JLabel team23 = new JLabel(new ImageIcon(this.getClass().getResource("/cn/picture/11.png")));
 		team23.setBounds(743, 200, 50, 60);
 		add(team23);
+
+		// btnSettings
+		JButton pause = new JButton(new ImageIcon(this.getClass().getResource("/cn/picture/pause.png")));
+		pause.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+
+				settingsPanel.setVisible(true);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				pause.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/pause.png")));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				pause.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/pause.png")));
+			}
+		});
+		pause.setContentAreaFilled(false);
+		pause.setBorderPainted(false);
+		pause.setBounds(69, 275, 70, 70);
+		add(pause);
+		// test
+		settingsPanel = new JPanel();
+		settingsPanel.setBackground(Color.GRAY);
+		settingsPanel.setBounds(397, 275, 208, 32);
+		settingsPanel.setVisible(false);
+		add(settingsPanel);
+		settingsPanel.setLayout(null);
+
+		JButton btnBack = new JButton("chongxingkaishi");
+		btnBack.setContentAreaFilled(false);
+		btnBack.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				StartPanel.getCard().show(StartPanel.getCardPanel(), "mainPane");
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+		});
+		btnBack.setBounds(0, 0, 93, 32);
+		settingsPanel.add(btnBack);
+
+		JButton btnContinue = new JButton("jixuyouxi");
+		btnContinue.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				settingsPanel.setVisible(false);
+				Main.startPanel.gameFieldPanel.requestFocus();
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+		});
+		btnContinue.setBounds(117, 0, 93, 32);
+		settingsPanel.add(btnContinue);
+
 	}
 
 	public void initImag() {
@@ -233,20 +382,26 @@ public class GameField extends BackGroundPanel {
 			transfer36 = ImageIO.read(this.getClass().getResource("/cn/picture/transfer36.png"));
 			transfer37 = ImageIO.read(this.getClass().getResource("/cn/picture/transfer37.png"));
 			transfer38 = ImageIO.read(this.getClass().getResource("/cn/picture/transfer38.png"));
-			
-			//test
-			hero11 = ImageIO.read(this.getClass().getResource("/cn/picture/hero/11.png"));
-			hero23 = ImageIO.read(this.getClass().getResource("/cn/picture/hero/66.png"));
-			//test hiding
-		    hidehero11 = ImageIO.read(this.getClass().getResource("/cn/picture/hero/111.png"));
-			hidehero23 = ImageIO.read(this.getClass().getResource("/cn/picture/hero/661.png"));
-			
 			range1 = ImageIO.read(this.getClass().getResource("/cn/picture/hero/range1.png"));
 			range2 = ImageIO.read(this.getClass().getResource("/cn/picture/hero/range2.png"));
 			flag1 = ImageIO.read(this.getClass().getResource("/cn/picture/hero/flag1.png"));
 			flag2 = ImageIO.read(this.getClass().getResource("/cn/picture/hero/flag2.png"));
-			
-			
+
+			// test should change again after get picture
+			hero11down = ImageIO.read(this.getClass().getResource("/cn/picture/hero/11.png"));
+			hero12down = ImageIO.read(this.getClass().getResource("/cn/picture/hero/11.png"));
+			hero13down = ImageIO.read(this.getClass().getResource("/cn/picture/hero/11.png"));
+			hero21down = ImageIO.read(this.getClass().getResource("/cn/picture/hero/66.png"));
+			hero22down = ImageIO.read(this.getClass().getResource("/cn/picture/hero/66.png"));
+			hero23down = ImageIO.read(this.getClass().getResource("/cn/picture/hero/66.png"));
+			// test hiding
+			hide11down = ImageIO.read(this.getClass().getResource("/cn/picture/hero/111.png"));
+			hide12down = ImageIO.read(this.getClass().getResource("/cn/picture/hero/111.png"));
+			hide13down = ImageIO.read(this.getClass().getResource("/cn/picture/hero/111.png"));
+			hide21down = ImageIO.read(this.getClass().getResource("/cn/picture/hero/661.png"));
+			hide22down = ImageIO.read(this.getClass().getResource("/cn/picture/hero/661.png"));
+			hide23down = ImageIO.read(this.getClass().getResource("/cn/picture/hero/661.png"));
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -256,10 +411,10 @@ public class GameField extends BackGroundPanel {
 	public void paint(Graphics g) {
 		super.paint(g);
 		drawField(g);
-//		drawSamurai(g);
+		drawSamurai(g);
 
 		drawFlag(g);
-		drawhitRange(g);
+		drawHitRange(g);
 		team11.drawBlood(g);
 		team11.drawPower(g);
 
@@ -283,8 +438,8 @@ public class GameField extends BackGroundPanel {
 		for (int i = 0; i < 12; i++) {
 			for (int j = 0; j < 12; j++) {
 				Configure.map[i][j] = Configure.mapField[MapSelectPanel.numOfMap - 1][i][j];
-				//give the grass data to SCORE,change the grass to 3 to turn it
-				
+				// give the grass data to SCORE,change the grass to 3 to turn it
+
 			}
 		}
 		for (int i = 0; i < Configure.map.length; i++) {
@@ -334,54 +489,288 @@ public class GameField extends BackGroundPanel {
 		}
 	}
 
-//	void drawSamurai(Graphics g) {
-//		for (int i = 0; i < Configure.samuraiField.length; i++) {
-//			for (int j = 0; j < Configure.samuraiField[i].length; j++) {
-//				if (Configure.samuraiField[i][j] == Configure.CAPTAIN_AMERICA || Configure.samuraiField[i][j] == Configure.HULK
-//						|| Configure.samuraiField[i][j] == Configure.HAWKEYE) {
-//					g.drawImage(hero11, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
-//							340 + i * Configure.HEIGHT - 33, null);
-//				} else if (Configure.samuraiField[i][j] == Configure.IRON_MAN || Configure.samuraiField[i][j] == Configure.BLACK_WIDOW
-//						|| Configure.samuraiField[i][j] == Configure.SPIDER_MAN) {
-//					g.drawImage(hero23, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
-//							340 + i * Configure.HEIGHT - 33, null);
-//				}
-//			}
-//		}
-//		repaint();
-//	}
-	
-   	void drawhitRange(Graphics g){
-		for (int k = 0; k< 6; k++) {
+	void drawSamurai(Graphics g) {
+		for (int k = 0; k < 7; k++) {
 			for (int i = 0; i < 12; i++) {
 				for (int j = 0; j < 12; j++) {
-					if(Configure.hitRangeField[k][i][j] == Configure.CAP_ATTACK||
-						Configure.hitRangeField[k][i][j] == Configure.HULK_ATTACK||
-						  Configure.hitRangeField[k][i][j] == Configure.HAWKEYE_ATTACK){
-								g.drawImage(range1, 40 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
-									340 + i * Configure.HEIGHT, null);
-					}else if(Configure.hitRangeField[k][i][j] == Configure.IRON_MAN_ATTACK||
-						Configure.hitRangeField[k][i][j] == Configure.BLACK_WIDOW_ATTACK||
-						  Configure.hitRangeField[k][i][j] == Configure.SPIDER_MAN_ATTACK){
-					     	g.drawImage(range2, 40 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
-								 340 + i * Configure.HEIGHT, null);
+					switch (game.samuraiField[k][i][j]) {
+					case 1101: {
+						g.drawImage(hero11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 1102: {
+						g.drawImage(hero11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 1103: {
+						g.drawImage(hero11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 1104: {
+						g.drawImage(hero11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 2201: {
+						g.drawImage(hero12down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 2202: {
+						g.drawImage(hero12down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 2203: {
+						g.drawImage(hero12down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 2204: {
+						g.drawImage(hero12down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 3301: {
+						g.drawImage(hero13down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 3302: {
+						g.drawImage(hero13down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 3303: {
+						g.drawImage(hero13down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 3304: {
+						g.drawImage(hero13down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 4401: {
+						g.drawImage(hero21down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 4402: {
+						g.drawImage(hero21down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 4403: {
+						g.drawImage(hero21down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 4404: {
+						g.drawImage(hero21down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 5501: {
+						g.drawImage(hero22down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 5502: {
+						g.drawImage(hero22down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 5503: {
+						g.drawImage(hero22down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 5504: {
+						g.drawImage(hero22down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 6601: {
+						g.drawImage(hero23down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 6602: {
+						g.drawImage(hero23down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 6603: {
+						g.drawImage(hero23down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 6604: {
+						g.drawImage(hero23down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 1111: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 1112: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 1113: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 1114: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 2211: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 2212: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 2213: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 2214: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 3311: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 3312: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 3313: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 3314: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 4411: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 4412: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 4413: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 4414: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 5511: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 5512: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 5513: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 5514: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 6611: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 6612: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 6613: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
+					case 6614: {
+						g.drawImage(hide11down, 55 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT - 33, null);
+						break;
+					}
 					}
 				}
 			}
 		}
 	}
-	 void drawFlag(Graphics g){
-		for (int i = 0; i < 12; i++) {
-			for (int j = 0; j < 12; j++) {
-				if(Configure.scoreField[i][j] == Configure.SIDE_OF_CAP){
-					g.drawImage(flag1, 40 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
-							340 + i * Configure.HEIGHT-25, null);
-				}else if(Configure.scoreField[i][j] == Configure.SIDE_OF_IRON_MAN){
-					g.drawImage(flag2, 40 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
-							340 + i * Configure.HEIGHT-25, null);
+
+	void drawHitRange(Graphics g) {
+		for (int k = 0; k < 6; k++) {
+			for (int i = 0; i < 12; i++) {
+				for (int j = 0; j < 12; j++) {
+					if (Configure.hitRangeField[k][i][j] == Configure.CAP_ATTACK
+							|| Configure.hitRangeField[k][i][j] == Configure.HULK_ATTACK
+							|| Configure.hitRangeField[k][i][j] == Configure.HAWKEYE_ATTACK) {
+						g.drawImage(range1, 40 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT, null);
+					} else if (Configure.hitRangeField[k][i][j] == Configure.IRON_MAN_ATTACK
+							|| Configure.hitRangeField[k][i][j] == Configure.BLACK_WIDOW_ATTACK
+							|| Configure.hitRangeField[k][i][j] == Configure.SPIDER_MAN_ATTACK) {
+						g.drawImage(range2, 40 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+								340 + i * Configure.HEIGHT, null);
+					}
 				}
-			}			
+			}
 		}
 	}
 
+	void drawFlag(Graphics g) {
+		for (int i = 0; i < 12; i++) {
+			for (int j = 0; j < 12; j++) {
+				if (Configure.scoreField[i][j] == Configure.SIDE_OF_CAP) {
+					g.drawImage(flag1, 40 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+							340 + i * Configure.HEIGHT - 25, null);
+				} else if (Configure.scoreField[i][j] == Configure.SIDE_OF_IRON_MAN) {
+					g.drawImage(flag2, 40 + (12 - i) * Configure.DEVIATION + j * Configure.WIDTH,
+							340 + i * Configure.HEIGHT - 25, null);
+				}
+			}
+		}
+	}
 }

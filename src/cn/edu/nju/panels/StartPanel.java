@@ -29,7 +29,7 @@ public class StartPanel extends JFrame {
 
 	private JLayeredPane mainPane;
 	private JLabel background;
-	private JButton startBt, serverBt, helpBt, setBt, bt1, bt2, bt3, bt4, bt5, bt6;
+	private JButton startBt, serverBt, setBt, bt1, bt2, bt3, bt4, bt5, bt6;
 	private static JPanel cardPanel;
 	private static CardLayout card;
 	private Image logo;
@@ -60,7 +60,8 @@ public class StartPanel extends JFrame {
 		cardPanel.add(mapSelectPanel, "mapSelectPanel");
 		cardPanel.add(helpPanel, "helpPanel");
 		cardPanel.add(modeSelectPanel, "modeSelectPanel");
-	cardPanel.add(gameFieldPanel, "gameFieldPanel");
+		cardPanel.add(gameFieldPanel, "gameFieldPanel");
+
 
 		background = new JLabel(new ImageIcon(this.getClass().getResource("/cn/picture/start.jpg")));
 		background.setBounds(0, 0, 960, 690);
@@ -98,18 +99,19 @@ public class StartPanel extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
 				musicThread start = new musicThread();
 				start.creatMT(myAudioPlayer.chooseMap, 1);
 				start.start();
 				start.stop();
-				card.show(cardPanel, "mapSelectPanel");
+				card.show(cardPanel, "helpPanel");
 			}
 
 		});
 
 		serverBt = new JButton(new ImageIcon(this.getClass().getResource("/cn/picture/connectIcon.png")));
 		serverBt.setBorderPainted(false);
-		serverBt.setBounds(355, 325, 70, 70);
+		serverBt.setBounds(375, 325, 70, 70);
 		serverBt.setContentAreaFilled(false);
 		serverBt.addMouseListener(new MouseAdapter() {
 			@Override
@@ -137,39 +139,9 @@ public class StartPanel extends JFrame {
 			}
 		});
 
-		helpBt = new JButton(new ImageIcon(this.getClass().getResource("/cn/picture/helpIcon.png")));
-		helpBt.setBorderPainted(false);
-		helpBt.setBounds(445, 325, 70, 70);
-		helpBt.setContentAreaFilled(false);
-		helpBt.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				helpBt.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/helpIcon.png")));
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				helpBt.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/helpIcon2.png")));
-				musicThread help = new musicThread();
-				help.creatMT(myAudioPlayer.Enter, 1);
-				help.start();
-				help.stop();
-			}
-
-			public void mouseClicked(MouseEvent e) {
-				musicThread start = new musicThread();
-				start.creatMT(myAudioPlayer.chooseMap, 1);
-				start.start();
-				start.stop();
-				card.show(cardPanel, "helpPanel");
-			}
-		});
-
 		setBt = new JButton(new ImageIcon(this.getClass().getResource("/cn/picture/setIcon.png")));
 		setBt.setBorderPainted(false);
-		setBt.setBounds(535, 325, 70, 70);
+		setBt.setBounds(515, 325, 70, 70);
 		setBt.setContentAreaFilled(false);
 		setBt.addMouseListener(new MouseAdapter() {
 			@Override
@@ -225,7 +197,6 @@ public class StartPanel extends JFrame {
 		
 		mainPane.add(startBt, JLayeredPane.MODAL_LAYER);
 		mainPane.add(serverBt, JLayeredPane.MODAL_LAYER);
-		mainPane.add(helpBt, JLayeredPane.MODAL_LAYER);
 		mainPane.add(setBt, JLayeredPane.MODAL_LAYER);
 		mainPane.add(bt1, JLayeredPane.MODAL_LAYER);
 		mainPane.add(bt2, JLayeredPane.MODAL_LAYER);

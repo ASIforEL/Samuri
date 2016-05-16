@@ -17,7 +17,14 @@ TREE = 4
 
 
 
-二、samuraiField[][]			//标识武士的位置,第三位标识状态，第四位标识方向
+二、samuraiField[][][]			//第一维度表示是否隐身，0下表示隐身状态的武士的信息，1下表示隐身状态的武士的信息。	标识武士的位置,第三位标识状态，第四位标识方向
+
+public static final int CAPTAIN_AMERICA = 11;
+public static final int HULK = 22;
+public static final int HAWKEYE = 33;
+public static final int IRON_MAN = 44;
+public static final int BLACK_WIDOW = 55;
+public static final int SPIDER_MAN = 66;
 
 CAPTAIN_AMERICA_WEST = 1101;
 CAPTAIN_AMERICA_EAST = 1102;

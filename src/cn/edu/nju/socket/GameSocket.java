@@ -26,7 +26,7 @@ public class GameSocket implements Runnable{
 	@Override
 	public void run(){
 		try {
-			//get the input
+			//get the input from the client
 			reader = new BufferedReader(
 					new InputStreamReader(
 							socket.getInputStream(), "UTF-8"));
@@ -66,10 +66,10 @@ public class GameSocket implements Runnable{
 	 * output the information tp the Client
 	 * @param output
 	 */
-	public void out(String output) {
+	public void send(String output) {
 		try {
 			socket.getOutputStream().write(output.getBytes("UTF-8"));
-
+			
 			//			writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
 			//			writer.write(output);
 		} catch (UnsupportedEncodingException e) {

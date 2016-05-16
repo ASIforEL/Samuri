@@ -21,6 +21,13 @@ public class Configure {
 	public static final int HOME_OF_IRON_MAN=6;
 	
 	//of samuraiField[][]
+	public static final int CAPTAIN_AMERICA = 11;
+	public static final int HULK = 22;
+	public static final int HAWKEYE = 33;
+	public static final int IRON_MAN = 44;
+	public static final int BLACK_WIDOW = 55;
+	public static final int SPIDER_MAN = 66;
+	
 	public static int CAPTAIN_AMERICA_WEST = 1101;
 	public static int CAPTAIN_AMERICA_EAST = 1102;
 	public static int CAPTAIN_AMERICA_NORTH = 1103;
@@ -75,7 +82,6 @@ public class Configure {
 	public static int SPIDER_MAN_NORTH_HIDE = 6613;
 	public static int SPIDER_MAN_SOUTH_HIDE = 6614;
 	
-	
 	//of HitRangeField[][][]
 	public static final int CAP_ATTACK = 1;
 	public static final int HULK_ATTACK = 2;
@@ -110,14 +116,14 @@ public class Configure {
 	public static int[][] samuraiField=new int[][]{
 		{0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{1102,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,4401},
 		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{2202,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,5501},
 		{0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0,0,0},
+		{3302,0,0,0,0,0,0,0,0,0,0,0},
+		{0,0,0,0,0,0,0,0,0,0,0,6601},
 		{0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0},
 	};

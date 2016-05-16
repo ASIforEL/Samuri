@@ -20,7 +20,7 @@ public class CaptainAmerica extends Samurai{
 		this.setCurY(this.getHomeY());
 		System.out.println("Initializing the Cap");
 		
-		samuraiFieldNum = Configure.CAPTAIN_AMERICA;
+		homeSamuraiFieldNum = Configure.CAPTAIN_AMERICA * 100 + 2;
 		hitRangeFieldNum = Configure.CAP_ATTACK;
 		manor = this.getSide() + 1;
 		

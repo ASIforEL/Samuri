@@ -1,26 +1,22 @@
 package cn.edu.nju.panels;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
-import cn.edu.nju.gameMusic.musicThread;
-import cn.edu.nju.gameMusic.myAudioPlayer;
-import cn.edu.nju.panels.*;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import cn.edu.nju.gameMusic.*;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+
+import cn.edu.nju.gameMusic.musicThread;
+import cn.edu.nju.gameMusic.myAudioPlayer;
 
 public class ModeSelectPanel extends BackGroundPanel {
+
+	private static final long serialVersionUID = 1L;
+	
 	static int team1hero=1;
 	static int team2hero=1;
 	ImageIcon hero1JL[]=new ImageIcon[3];
@@ -47,6 +43,8 @@ public class ModeSelectPanel extends BackGroundPanel {
 			public void mouseClicked(MouseEvent e) {
 
 			//	new GameFrame();
+//				Main.startPanel.gameFieldPanel=new GameField();
+//				StartPanel.getCardPanel().add(Main.startPanel.gameFieldPanel, "gameFieldPanel");
 				StartPanel.getCard().show(StartPanel.getCardPanel(), "gameFieldPanel");
 				Main.startPanel.gameFieldPanel.requestFocus();
 				
@@ -86,7 +84,7 @@ public class ModeSelectPanel extends BackGroundPanel {
 				{
 				public void keyPressed(KeyEvent e)
 				{
-				System.out.println("ÊµÏÖ¼àÌý");
+				System.out.println("Êµï¿½Ö¼ï¿½ï¿½ï¿½");
 				 if(e.getKeyCode()==KeyEvent.VK_UP){
 				    System.out.println("up");
 				 }

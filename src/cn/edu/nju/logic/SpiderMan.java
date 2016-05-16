@@ -22,7 +22,7 @@ public class SpiderMan extends Samurai{
 		this.setCurY(this.getHomeY());
 		System.out.println("Initializing the SpiderMan");
 
-		samuraiFieldNum = Configure.SPIDER_MAN;
+		homeSamuraiFieldNum = Configure.SPIDER_MAN * 100 + 1;
 		hitRangeFieldNum = Configure.SPIDER_MAN_ATTACK;
 		manor = this.getSide() + 1;
 

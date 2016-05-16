@@ -28,7 +28,8 @@ public abstract class Samurai {
 	int[][] samuraiField = Configure.samuraiField;		//set the samurai's current locatioon
 	int[][] scoreField = Configure.scoreField;
 	
-	protected int samuraiFieldNum;				//of samuraiField[][]	11 / 22 / 33 / 44 / 55 / 66
+	protected int samuraiFieldNum;				//of samuraiField[][]	11 / 22 / 33 / 44 / 55 / 66 + hidden + direction
+	protected int homeSamuraiFieldNum;
 	protected int hitRangeFieldNum;				//of hitRangeField[][][] in Game game		1 / 2 / 3 / 4 / 5 / 6
 	protected int manor;
 	
@@ -51,6 +52,7 @@ public abstract class Samurai {
 		
 		Samurai.prompt = "";
 		
+		this.samuraiFieldNum = homeSamuraiFieldNum;
 		this.game = game;
 		this.gameField = gameField;
 		this.hidden = false;
@@ -83,6 +85,14 @@ public abstract class Samurai {
 	public Direction getDirection() {
 		return this.direction;
 	}
+	
+	public int getDirectionNum() {
+		if (this.getDirection() == Direction.WEST) return 1;
+		else if (this.getDirection() == Direction.EAST) return 2;
+		else if (this.getDirection() == Direction.NORTH) return 3;
+		else return 4;
+
+	}
 
 	public int getLifeSpan() {
 		return this.lifespan;
@@ -92,6 +102,11 @@ public abstract class Samurai {
 		return this.hidden;
 	}
 
+	public int getHiddenNum(){
+		if (this.getHidden() == true) return 1;
+		else return 0;
+	}
+	
 	public int getSide() {
 		return this.side;
 	}
@@ -106,6 +121,18 @@ public abstract class Samurai {
 	
 	public String getPrompt() {
 		return Samurai.prompt;
+	}
+	
+	public int getSamuraiFieldNum() {
+		switch (2 * this.getWeapon() + this.getSide()) {
+		case 0:return Configure.CAPTAIN_AMERICA * 100 + this.getHiddenNum() * 10 + this.getDirectionNum();
+		case 1:return Configure.IRON_MAN * 100 + this.getHiddenNum() * 10 + this.getDirectionNum();
+		case 2:return Configure.HULK * 100 + this.getHiddenNum() * 10 + this.getDirectionNum();
+		case 3:return Configure.BLACK_WIDOW * 100 + this.getHiddenNum() * 10 + this.getDirectionNum();
+		case 4:return Configure.HAWKEYE * 100 + this.getHiddenNum() * 10 + this.getDirectionNum();
+		case 5:return Configure.SPIDER_MAN * 100 + this.getHiddenNum() * 10 + this.getDirectionNum();
+		}
+		return 0;
 	}
 
 	public void setHomeX(int info) {
@@ -188,7 +215,7 @@ public abstract class Samurai {
 					game.setHitRange(this);
 				}
 
-				if (action >= 1 && action <= 4){					
+				if (action >= 1 && action <= 4){	
 					int preX = this.getCurX();
 					int preY = this.getCurY();
 
@@ -202,24 +229,40 @@ public abstract class Samurai {
 						transfer();
 					}
 
-					samuraiField[preY][preX] = 0;
-					samuraiField[this.getCurY()][this.getCurX()] = this.samuraiFieldNum;
+					if (this.getHidden()) {
+						//it is hidden
+						game.samuraiField[2 * this.getWeapon() + this.getSide()][preY][preX] = 0;
+						game.samuraiField[2 * this.getWeapon() + this.getSide()][this.getCurY()][this.getCurX()] = this.getSamuraiFieldNum();
+					}else {
+						game.samuraiField[0][preY][preX] = 0;
+						game.samuraiField[0][this.getCurY()][this.getCurX()] = this.getSamuraiFieldNum();
+					}
 					
 					game.setHitRange(this);
 				}
 
 				if (action == 6){		
-					this.hidden = true;
+					this.setHidden(true);
 					this.curPower -= 1;
 					
+					//change it to the hidden samurai's map
+					game.samuraiField[0][this.getCurY()][this.getCurX()] = 0;
+					game.samuraiField[2 * this.getWeapon() + this.getSide()][this.getCurY()][this.getCurX()] = this.samuraiFieldNum;
+					
 					game.setHitRange(this);
+					gameField.repaint();
 				}
 
 				if (action == 7){			
-					this.hidden = false;
+					this.setHidden(false);
 					this.curPower -= 1;
 					
+					//change it to the showing samurai's map
+					game.samuraiField[0][this.getCurY()][this.getCurX()] = this.samuraiFieldNum;
+					game.samuraiField[2 * this.getWeapon() + this.getSide()][this.getCurY()][this.getCurX()] = 0;
+					
 					game.setHitRange(this);
+					gameField.repaint();
 				}
 
 				if (action == 10) {
@@ -258,13 +301,13 @@ public abstract class Samurai {
 					this.setPrompt("");
 				}else {
 					switch (action) {
-					case 1:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
-					case 2:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
-					case 3:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
-					case 4:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
-					case 6:JOptionPane.showMessageDialog(null, "You cannot hide!");break;
-					case 7:JOptionPane.showMessageDialog(null, "You cannot show!");break;
-					case 10:JOptionPane.showMessageDialog(null, "You cannot hit this region!");break;
+//					case 1:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
+//					case 2:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
+//					case 3:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
+//					case 4:JOptionPane.showMessageDialog(null, "You cannot move to this block!");break;
+//					case 6:JOptionPane.showMessageDialog(null, "You cannot hide!");break;
+//					case 7:JOptionPane.showMessageDialog(null, "You cannot show!");break;
+//					case 10:JOptionPane.showMessageDialog(null, "You cannot hit this region!");break;
 					}
 
 				}
@@ -362,12 +405,24 @@ public abstract class Samurai {
 	private void hit(Samurai hittenSamurai) {
 		if (hittenSamurai != null) {
 			samuraiField[hittenSamurai.getCurY()][hittenSamurai.getCurX()] = 0;
-			
 			hittenSamurai.setLifeSpan(hittenSamurai.getLifeSpan() - 1);
 			hittenSamurai.setCurX(hittenSamurai.getHomeX());
 			hittenSamurai.setCurY(hittenSamurai.getHomeY());
+			//set its diretion of home to ensure the hitRangeField
+			switch (hittenSamurai.getSide()) {
+			case 0:hittenSamurai.setDirection(Direction.EAST);break;
+			case 1:hittenSamurai.setDirection(Direction.WEST);break;
+			}
+			samuraiField[hittenSamurai.getCurY()][hittenSamurai.getCurX()] = hittenSamurai.homeSamuraiFieldNum;
 			
-			samuraiField[hittenSamurai.getCurY()][hittenSamurai.getCurX()] = this.samuraiFieldNum;
+			//reset the hitten samurai's hit range
+//			for (int j = 0; j < 12; j++) {
+//				for (int j2 = 0; j2 < 12; j2++) {
+//					game.setHitRange(game.samurais[2 * hittenSamurai.getWeapon() + hittenSamurai.getSide()]);
+//				}
+//			}
+			game.setHitRange(hittenSamurai);
+			//set the flags
 			game.setScoreField(this);
 		}
 	}
@@ -460,35 +515,41 @@ public abstract class Samurai {
 					this.setPrompt("You have not enough power to execute this action!");
 					return false;
 				}else {
-					switch (this.weapon) {
-					case 0:
-						if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13))) {
-							resume(preX, preY, preDirection, preHidden);
-							return true;
-						}else {
-							resume(preX, preY, preDirection, preHidden);
-							return false;
-						}
-					case 1:
-						if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13)) || 
-								canHit(getHittenSamurai(14)) || canHit(getHittenSamurai(15))) {
-							resume(preX, preY, preDirection, preHidden);
-							return true;
-						}else {
-							resume(preX, preY, preDirection, preHidden);
-							return false;
-						}
-					case 2:
-						if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13)) || 
-								canHit(getHittenSamurai(14)) || canHit(getHittenSamurai(15)) || 
-								canHit(getHittenSamurai(16)) || canHit(getHittenSamurai(17))) {
-							resume(preX, preY, preDirection, preHidden);
-							return true;
-						}else {
-							resume(preX, preY, preDirection, preHidden);
-							return false;
+					if (this.getHidden() == true) {
+						//it is hidden & cannot attack others
+						return false;
+					}else {
+						switch (this.weapon) {
+						case 0:
+							if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13))) {
+								resume(preX, preY, preDirection, preHidden);
+								return true;
+							}else {
+								resume(preX, preY, preDirection, preHidden);
+								return false;
+							}
+						case 1:
+							if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13)) || 
+									canHit(getHittenSamurai(14)) || canHit(getHittenSamurai(15))) {
+								resume(preX, preY, preDirection, preHidden);
+								return true;
+							}else {
+								resume(preX, preY, preDirection, preHidden);
+								return false;
+							}
+						case 2:
+							if (canHit(getHittenSamurai(11)) || canHit(getHittenSamurai(12)) || canHit(getHittenSamurai(13)) || 
+									canHit(getHittenSamurai(14)) || canHit(getHittenSamurai(15)) || 
+									canHit(getHittenSamurai(16)) || canHit(getHittenSamurai(17))) {
+								resume(preX, preY, preDirection, preHidden);
+								return true;
+							}else {
+								resume(preX, preY, preDirection, preHidden);
+								return false;
+							}
 						}
 					}
+					
 				}
 			}
 			return false;	
@@ -531,13 +592,9 @@ public abstract class Samurai {
 					//this one is the caller 
 					continue;
 				}else {
-					//there is another one existing
-					if (this.getHidden() == true) {
-						return true;
-					}
-					if (this.getHidden() == false) {
-						return false;
-					}
+					//there are two samurais in a block now
+					if (!this.getHidden() && !game.samurais[i].getHidden()) return false;
+					else return true;
 				}
 				
 			}
@@ -654,7 +711,13 @@ public abstract class Samurai {
 	 * @return
 	 */
 	private boolean canHit(Samurai hittenSamurai) {
-		if (hittenSamurai != null) {
+		if (hittenSamurai != null && !hittenSamurai.isKilled()) {
+			if (mapField[hittenSamurai.getCurY()][hittenSamurai.getCurX()] == Configure.HOME_OF_CAP || 
+					mapField[hittenSamurai.getCurY()][hittenSamurai.getCurX()] == Configure.HOME_OF_IRON_MAN) {
+				//cannot hit when the expected hitted samurai is at home
+				return false;
+			}
+			
 			//there is a samurai can be hitten
 			int myWeapon = this.weapon;
 			int x1 = this.getCurX();
@@ -745,8 +808,8 @@ public abstract class Samurai {
 	private void occupy() {
 		int[][] thisHitRangeField = game.hitRangeField[2 * weapon + side];
 		
-		for (int i = 0; i < thisHitRangeField.length; i++) {
-			for (int j = 0; j < thisHitRangeField[0].length; j++) {
+		for (int i = 0; i < 12; i++) {
+			for (int j = 0; j < 12; j++) {
 				if (thisHitRangeField[i][j] == this.hitRangeFieldNum) {
 					game.scoreField[i][j] = this.manor;
 				}

@@ -20,7 +20,7 @@ public class BlackWidow extends Samurai{
 		this.setCurY(this.getHomeY());
 		System.out.println("Initializing the BlackWidow");
 
-		samuraiFieldNum = Configure.BLACK_WIDOW;
+		homeSamuraiFieldNum = Configure.BLACK_WIDOW * 100 + 1;
 		hitRangeFieldNum = Configure.BLACK_WIDOW_ATTACK;
 		manor = this.getSide() + 1;
 	
