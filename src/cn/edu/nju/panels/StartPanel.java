@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.KeyAdapter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -32,7 +33,7 @@ public class StartPanel extends JFrame {
 	private static JPanel cardPanel;
 	private static CardLayout card;
 	private Image logo;
-	
+	public GameField gameFieldPanel ;
 	public StartPanel() {
 		
 	
@@ -51,15 +52,15 @@ public class StartPanel extends JFrame {
 		MapSelectPanel mapSelectPanel = new MapSelectPanel();
 		HelpPanel helpPanel = new HelpPanel();
 		ModeSelectPanel modeSelectPanel = new ModeSelectPanel();
-		GameField gameFieldPanel = new GameField();
-
+		gameFieldPanel = new GameField();
+		
 		// �������뵽cardPanel��
 		mainPane = new JLayeredPane();
 		cardPanel.add(mainPane, "mainPane");
 		cardPanel.add(mapSelectPanel, "mapSelectPanel");
 		cardPanel.add(helpPanel, "helpPanel");
 		cardPanel.add(modeSelectPanel, "modeSelectPanel");
-		cardPanel.add(gameFieldPanel, "gameFieldPanel");
+	cardPanel.add(gameFieldPanel, "gameFieldPanel");
 
 		background = new JLabel(new ImageIcon(this.getClass().getResource("/cn/picture/start.jpg")));
 		background.setBounds(0, 0, 960, 690);
@@ -89,6 +90,10 @@ public class StartPanel extends JFrame {
 			public void mouseEntered(MouseEvent e) {
 				// TODO Auto-generated method stub
 				startBt.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/startIcon2.png")));
+				musicThread start = new musicThread();
+				start.creatMT(myAudioPlayer.Enter, 1);
+				start.start();
+				start.stop();
 			}
 
 			@Override
@@ -117,6 +122,10 @@ public class StartPanel extends JFrame {
 			public void mouseEntered(MouseEvent e) {
 				// TODO Auto-generated method stub
 				serverBt.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/connectIcon2.png")));
+				musicThread help = new musicThread();
+				help.creatMT(myAudioPlayer.Enter, 1);
+				help.start();
+				help.stop();
 			}
 
 			public void mouseClicked(MouseEvent e) {
@@ -143,6 +152,10 @@ public class StartPanel extends JFrame {
 			public void mouseEntered(MouseEvent e) {
 				// TODO Auto-generated method stub
 				helpBt.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/helpIcon2.png")));
+				musicThread help = new musicThread();
+				help.creatMT(myAudioPlayer.Enter, 1);
+				help.start();
+				help.stop();
 			}
 
 			public void mouseClicked(MouseEvent e) {
@@ -169,6 +182,10 @@ public class StartPanel extends JFrame {
 			public void mouseEntered(MouseEvent e) {
 				// TODO Auto-generated method stub
 				setBt.setIcon(new ImageIcon(this.getClass().getResource("/cn/picture/setIcon2.png")));
+				musicThread help = new musicThread();
+				help.creatMT(myAudioPlayer.Enter, 1);
+				help.start();
+				help.stop();
 			}
 
 			public void mouseClicked(MouseEvent e) {
@@ -244,4 +261,7 @@ public class StartPanel extends JFrame {
 	public static CardLayout getCard() {
 		return card;
 	}
+	
+	
+	
 }

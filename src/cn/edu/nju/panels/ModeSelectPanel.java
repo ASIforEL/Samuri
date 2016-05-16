@@ -46,10 +46,10 @@ public class ModeSelectPanel extends BackGroundPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 
+			//	new GameFrame();
+				StartPanel.getCard().show(StartPanel.getCardPanel(), "gameFieldPanel");
+				Main.startPanel.gameFieldPanel.requestFocus();
 				
-/////////if you get it£¬   				StartPanel.getCard().show(StartPanel.getCardPanel(), "gameFieldPanel");
-//if not .... how to dispose the fore Frame......
-				new GameFrame();
 				musicThread nextButton =  new musicThread();
 				nextButton.creatMT(myAudioPlayer.enterSprites, 1);
 				nextButton.start();

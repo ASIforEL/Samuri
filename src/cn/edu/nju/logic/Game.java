@@ -9,7 +9,7 @@ import cn.edu.nju.panels.StartPanel;
 public class Game implements Runnable{
 	public static final int PLAYER_NUM = 6;
 	public static final int TOTAL_TURNS = 1008;
-	public static int totalScore;
+	public int totalScore;
 	public int teamCapScore;
 	public int teamIronManScore;
 
@@ -31,14 +31,18 @@ public class Game implements Runnable{
 		samuraiField = Configure.samuraiField;
 		rootHitRangeField = getHitRangeField(map);
 		scoreField = getHitRangeField(map);
+		Configure.scoreField = scoreField;
+		
+		totalScore = getTotalScore(rootHitRangeField);
 
 		//initialize every samurai's hitRangeField to the root one
-		hitRangeField[0] = rootHitRangeField;
-		hitRangeField[1] = rootHitRangeField;
-		hitRangeField[2] = rootHitRangeField;
-		hitRangeField[3] = rootHitRangeField;
-		hitRangeField[4] = rootHitRangeField;
-		hitRangeField[5] = rootHitRangeField;
+		for (int i = 0; i < 6; i++) {
+			for (int j = 0; j < 12; j++) {
+				for (int j2 = 0; j2 < 12; j2++) {
+					hitRangeField[i][j][j2] = rootHitRangeField[j][j2];
+				}
+			}
+		}
 
 		//the even number represents TeamCap, odd number represents TeamIronMan
 		//initialize them in their run order
@@ -62,6 +66,13 @@ public class Game implements Runnable{
 		samurais[3].samuraiField = this.samuraiField;
 		samurais[4].samuraiField = this.samuraiField;
 		samurais[5].samuraiField = this.samuraiField;
+		
+		samurais[0].scoreField = this.scoreField;
+		samurais[1].scoreField = this.scoreField;
+		samurais[2].scoreField = this.scoreField;
+		samurais[3].scoreField = this.scoreField;
+		samurais[4].scoreField = this.scoreField;
+		samurais[5].scoreField = this.scoreField;
 
 		System.out.println("Finish Initializing the game");
 	}
@@ -89,13 +100,22 @@ public class Game implements Runnable{
 			samurais[curSamuraiNum].doAction(action);
 			gameField.repaint();
 
-			System.out.println(curTurn);
-			System.out.println(samurais[curSamuraiNum].getCurX());
-			System.out.println(samurais[curSamuraiNum].getCurY());
-			System.out.println(samurais[curSamuraiNum].getLifeSpan());
-			System.out.println(samurais[curSamuraiNum].getPower());
+			System.out.print(curTurn + " ");
+			System.out.print(totalScore + " ");
+			System.out.println();
+			System.out.print(samurais[curSamuraiNum].getCurX() + " ");
+			System.out.print(samurais[curSamuraiNum].getCurY() + " ");
+			System.out.print(samurais[curSamuraiNum].getLifeSpan() + " ");
+			System.out.print(samurais[curSamuraiNum].getPower());
 
 			System.out.println();
+//			printScoreField();
+//			System.out.println();
+//			printScoreFieldOfCon();
+//			printRootOne();
+//			System.out.println();
+//			printHitRange();
+//			System.out.println();
 			//repaint
 		}
 	}
@@ -167,11 +187,7 @@ public class Game implements Runnable{
 	 * @return can / cannot
 	 */
 	public boolean isSpecial(int x, int y) {
-		if (map[x][y] == Configure.MOUN || map[x][y] == Configure.TREE || 
-				map[x][y] == Configure.TRANS1 || map[x][y] == Configure.TRANS2 || 
-				map[x][y] == Configure.TRANS3 || map[x][y] == Configure.TRANS4 || 
-				map[x][y] == Configure.TRANS5 || map[x][y] == Configure.TRANS6 || 
-				map[x][y] == Configure.TRANS7 || map[x][y] == Configure.TRANS8) {
+		if (rootHitRangeField[y][x] == -1) {
 			return true;
 		}else {
 			return false;
@@ -194,7 +210,7 @@ public class Game implements Runnable{
 	 * @param curTurn
 	 * @return curSamuraiNum
 	 */
-	private int turn2Samurai(int curTurn) {
+	public int turn2Samurai(int curTurn) {
 		return curTurn % 6;
 	}
 	
@@ -221,6 +237,505 @@ public class Game implements Runnable{
 	}
 	
 	/**
+	 * reset the hitRangeField to the root one
+	 */
+	public void resetHitRange() {
+		for (int j = 0; j < 12; j++) {
+			for (int j2 = 0; j2 < 12; j2++) {
+				hitRangeField[curSamuraiNum][j][j2] = rootHitRangeField[j][j2];
+			}
+		}
+	}
+	
+	/**
+	 * set this samurai's attack range
+	 * before you do this method setHitRange()
+	 * you need to reset this samurai's preHitRange (in hitRangeField[2weapon + side]) to rootHitRangeField
+	 */
+	public void setHitRange(Samurai samurai) {
+		if (samurai.getHidden() == true) {
+			//this one is hidden and it cannot hit others
+			resetHitRange();
+		}else {
+			switch (samurai.getWeapon()) {
+			case 0:setHitRange0();break;
+			case 1:setHitRange1();break;
+			case 2:setHitRange2();break;
+			}
+		}
+	}
+
+	private void setHitRange0() {
+		resetHitRange();
+		switch (samurais[curSamuraiNum].getDirection()) {
+		case WEST:
+			for (int i = 1; i <= 3; i++) {
+				if (isReachable(samurais[curSamuraiNum].getWest(i).getX(), samurais[curSamuraiNum].getWest(i).getY()) && 
+						!isSpecial(samurais[curSamuraiNum].getWest(i).getX(), samurais[curSamuraiNum].getWest(i).getY())) {
+					hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getWest(i).getY()][samurais[curSamuraiNum].getWest(i).getX()] 
+							= samurais[curSamuraiNum].hitRangeFieldNum;
+				}
+			}break;
+		case EAST:
+			for (int i = 1; i <= 3; i++) {
+				if (isReachable(samurais[curSamuraiNum].getEast(i).getX(), samurais[curSamuraiNum].getEast(i).getY()) && 
+						!isSpecial(samurais[curSamuraiNum].getEast(i).getX(), samurais[curSamuraiNum].getEast(i).getY())) {
+					hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getEast(i).getY()][samurais[curSamuraiNum].getEast(i).getX()] 
+							= samurais[curSamuraiNum].hitRangeFieldNum;
+				}
+			}break;
+		case NORTH:
+			for (int i = 1; i <= 3; i++) {
+				if (isReachable(samurais[curSamuraiNum].getNorth(i).getX(), samurais[curSamuraiNum].getNorth(i).getY()) && 
+						!isSpecial(samurais[curSamuraiNum].getNorth(i).getX(), samurais[curSamuraiNum].getNorth(i).getY())) {
+					hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getNorth(i).getY()][samurais[curSamuraiNum].getNorth(i).getX()] 
+							= samurais[curSamuraiNum].hitRangeFieldNum;
+				}
+			}break;
+		case SOUTH:
+			for (int i = 1; i <= 3; i++) {
+				if (isReachable(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY()) && 
+						!isSpecial(samurais[curSamuraiNum].getSouth(i).getX(), samurais[curSamuraiNum].getSouth(i).getY())) {
+					hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getSouth(i).getY()][samurais[curSamuraiNum].getSouth(i).getX()] 
+							= samurais[curSamuraiNum].hitRangeFieldNum;
+				}
+			}break;
+		}
+	}
+	
+	private void setHitRange1() {
+		resetHitRange();		
+		switch (samurais[curSamuraiNum].getDirection()) {
+		case WEST:
+			for (int i = 1; i <= 2; i++) {
+				if (isReachable(samurais[curSamuraiNum].getSouth(i).getX(), samurais[curSamuraiNum].getSouth(i).getY()) && 
+						!isSpecial(samurais[curSamuraiNum].getSouth(i).getX(), samurais[curSamuraiNum].getSouth(i).getY())) {
+					hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getSouth(i).getY()][samurais[curSamuraiNum].getSouth(i).getX()] 
+							= samurais[curSamuraiNum].hitRangeFieldNum;
+				}
+				if (isReachable(samurais[curSamuraiNum].getWest(i).getX(), samurais[curSamuraiNum].getWest(i).getY()) && 
+						!isSpecial(samurais[curSamuraiNum].getWest(i).getX(), samurais[curSamuraiNum].getWest(i).getY())) {
+					hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getWest(i).getY()][samurais[curSamuraiNum].getWest(i).getX()] 
+							= samurais[curSamuraiNum].hitRangeFieldNum;
+				}
+			}
+			if (isReachable(samurais[curSamuraiNum].getSouthWest(1).getX(), samurais[curSamuraiNum].getSouthWest(1).getY()) &&
+					!isSpecial(samurais[curSamuraiNum].getSouthWest(1).getX(), samurais[curSamuraiNum].getSouthWest(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getSouthWest(1).getY()][samurais[curSamuraiNum].getSouthWest(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}
+			break;
+		case EAST:
+			for (int i = 1; i <= 2; i++) {
+				if (isReachable(samurais[curSamuraiNum].getNorth(i).getX(), samurais[curSamuraiNum].getNorth(i).getY()) && 
+						!isSpecial(samurais[curSamuraiNum].getNorth(i).getX(), samurais[curSamuraiNum].getNorth(i).getY())) {
+					hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getNorth(i).getY()][samurais[curSamuraiNum].getNorth(i).getX()] 
+							= samurais[curSamuraiNum].hitRangeFieldNum;
+				}
+				if (isReachable(samurais[curSamuraiNum].getEast(i).getX(), samurais[curSamuraiNum].getEast(i).getY()) &&
+						!isSpecial(samurais[curSamuraiNum].getEast(i).getX(), samurais[curSamuraiNum].getEast(i).getY())) {
+					hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getEast(i).getY()][samurais[curSamuraiNum].getEast(i).getX()] 
+							= samurais[curSamuraiNum].hitRangeFieldNum;
+				}
+			}
+			if (isReachable(samurais[curSamuraiNum].getNorthEast(1).getX(), samurais[curSamuraiNum].getNorthEast(1).getY()) &&
+					!isSpecial(samurais[curSamuraiNum].getNorthEast(1).getX(), samurais[curSamuraiNum].getNorthEast(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getNorthEast(1).getY()][samurais[curSamuraiNum].getNorthEast(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}
+			break;
+		case NORTH:
+			for (int i = 1; i <= 2; i++) {
+				if (isReachable(samurais[curSamuraiNum].getNorth(i).getX(), samurais[curSamuraiNum].getNorth(i).getY()) &&
+						!isSpecial(samurais[curSamuraiNum].getNorth(i).getX(), samurais[curSamuraiNum].getNorth(i).getY())) {
+					hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getNorth(i).getY()][samurais[curSamuraiNum].getNorth(i).getX()] 
+							= samurais[curSamuraiNum].hitRangeFieldNum;
+				}
+				if (isReachable(samurais[curSamuraiNum].getWest(i).getX(), samurais[curSamuraiNum].getWest(i).getY()) && 
+						!isSpecial(samurais[curSamuraiNum].getWest(i).getX(), samurais[curSamuraiNum].getWest(i).getY())) {
+					hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getWest(i).getY()][samurais[curSamuraiNum].getWest(i).getX()] 
+							= samurais[curSamuraiNum].hitRangeFieldNum;
+				}
+			}
+			if (isReachable(samurais[curSamuraiNum].getNorthWest(1).getX(), samurais[curSamuraiNum].getNorthWest(1).getY()) &&
+					!isSpecial(samurais[curSamuraiNum].getNorthWest(1).getX(), samurais[curSamuraiNum].getNorthWest(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getNorthWest(1).getY()][samurais[curSamuraiNum].getNorthWest(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}
+			break;
+		case SOUTH:
+			for (int i = 1; i <= 2; i++) {
+				if (isReachable(samurais[curSamuraiNum].getSouth(i).getX(), samurais[curSamuraiNum].getSouth(i).getY()) &&
+						!isSpecial(samurais[curSamuraiNum].getSouth(i).getX(), samurais[curSamuraiNum].getSouth(i).getY())) {
+					hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getSouth(i).getY()][samurais[curSamuraiNum].getSouth(i).getX()] 
+							= samurais[curSamuraiNum].hitRangeFieldNum;
+				}
+				if (isReachable(samurais[curSamuraiNum].getEast(i).getX(), samurais[curSamuraiNum].getEast(i).getY()) &&
+						!isSpecial(samurais[curSamuraiNum].getEast(i).getX(), samurais[curSamuraiNum].getEast(i).getY())) {
+					hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getEast(i).getY()][samurais[curSamuraiNum].getEast(i).getX()] 
+							= samurais[curSamuraiNum].hitRangeFieldNum;
+				}
+			}
+			if (isReachable(samurais[curSamuraiNum].getSouthEast(1).getX(), samurais[curSamuraiNum].getSouthEast(1).getY()) &&
+					!isSpecial(samurais[curSamuraiNum].getSouthEast(1).getX(), samurais[curSamuraiNum].getSouthEast(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getSouthEast(1).getY()][samurais[curSamuraiNum].getSouthEast(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}
+			break;
+		}
+	}
+	
+	private void setHitRange2() {
+		resetHitRange();		
+		if (isReachable(samurais[curSamuraiNum].getSouthEast(1).getX(), samurais[curSamuraiNum].getSouthEast(1).getY()) && 
+				!isSpecial(samurais[curSamuraiNum].getSouthEast(1).getX(), samurais[curSamuraiNum].getSouthEast(1).getY())) {
+			hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getSouthEast(1).getY()][samurais[curSamuraiNum].getSouthEast(1).getX()] 
+					= samurais[curSamuraiNum].hitRangeFieldNum;
+		}
+		if (isReachable(samurais[curSamuraiNum].getSouthWest(1).getX(), samurais[curSamuraiNum].getSouthWest(1).getY()) &&
+				!isSpecial(samurais[curSamuraiNum].getSouthWest(1).getX(), samurais[curSamuraiNum].getSouthWest(1).getY())) {
+			hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getSouthWest(1).getY()][samurais[curSamuraiNum].getSouthWest(1).getX()] 
+					= samurais[curSamuraiNum].hitRangeFieldNum;
+		}
+		if (isReachable(samurais[curSamuraiNum].getNorthWest(1).getX(), samurais[curSamuraiNum].getNorthWest(1).getY()) && 
+				!isSpecial(samurais[curSamuraiNum].getNorthWest(1).getX(), samurais[curSamuraiNum].getNorthWest(1).getY())) {
+			hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getNorthWest(1).getY()][samurais[curSamuraiNum].getNorthWest(1).getX()] 
+					= samurais[curSamuraiNum].hitRangeFieldNum;
+		}
+		if (isReachable(samurais[curSamuraiNum].getNorthEast(1).getX(), samurais[curSamuraiNum].getNorthEast(1).getY()) && 
+				!isSpecial(samurais[curSamuraiNum].getNorthEast(1).getX(), samurais[curSamuraiNum].getNorthEast(1).getY())) {
+			hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getNorthEast(1).getY()][samurais[curSamuraiNum].getNorthEast(1).getX()] 
+					= samurais[curSamuraiNum].hitRangeFieldNum;
+		}
+		switch (samurais[curSamuraiNum].getDirection()) {
+		case WEST:
+			if (isReachable(samurais[curSamuraiNum].getWest(1).getX(), samurais[curSamuraiNum].getWest(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getWest(1).getX(), samurais[curSamuraiNum].getWest(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getWest(1).getY()][samurais[curSamuraiNum].getWest(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}
+			if (isReachable(samurais[curSamuraiNum].getNorth(1).getX(), samurais[curSamuraiNum].getNorth(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getNorth(1).getX(), samurais[curSamuraiNum].getNorth(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getNorth(1).getY()][samurais[curSamuraiNum].getNorth(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}if (isReachable(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getSouth(1).getY()][samurais[curSamuraiNum].getSouth(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}break;
+		case EAST:
+			if (isReachable(samurais[curSamuraiNum].getEast(1).getX(), samurais[curSamuraiNum].getEast(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getEast(1).getX(), samurais[curSamuraiNum].getEast(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getEast(1).getY()][samurais[curSamuraiNum].getEast(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}
+			if (isReachable(samurais[curSamuraiNum].getNorth(1).getX(), samurais[curSamuraiNum].getNorth(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getNorth(1).getX(), samurais[curSamuraiNum].getNorth(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getNorth(1).getY()][samurais[curSamuraiNum].getNorth(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}if (isReachable(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getSouth(1).getY()][samurais[curSamuraiNum].getSouth(1).getX()]
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}break;
+		case NORTH:
+			if (isReachable(samurais[curSamuraiNum].getWest(1).getX(), samurais[curSamuraiNum].getWest(1).getY())&&
+					!isSpecial(samurais[curSamuraiNum].getWest(1).getX(), samurais[curSamuraiNum].getWest(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getWest(1).getY()][samurais[curSamuraiNum].getWest(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}
+			if (isReachable(samurais[curSamuraiNum].getEast(1).getX(), samurais[curSamuraiNum].getEast(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getEast(1).getX(), samurais[curSamuraiNum].getEast(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getEast(1).getY()][samurais[curSamuraiNum].getEast(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}
+			if (isReachable(samurais[curSamuraiNum].getNorth(1).getX(), samurais[curSamuraiNum].getNorth(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getNorth(1).getX(), samurais[curSamuraiNum].getNorth(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getNorth(1).getY()][samurais[curSamuraiNum].getNorth(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}break;
+		case SOUTH:
+			if (isReachable(samurais[curSamuraiNum].getWest(1).getX(), samurais[curSamuraiNum].getWest(1).getY())&&
+					!isSpecial(samurais[curSamuraiNum].getWest(1).getX(), samurais[curSamuraiNum].getWest(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getWest(1).getY()][samurais[curSamuraiNum].getWest(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}
+			if (isReachable(samurais[curSamuraiNum].getEast(1).getX(), samurais[curSamuraiNum].getEast(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getEast(1).getX(), samurais[curSamuraiNum].getEast(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getEast(1).getY()][samurais[curSamuraiNum].getEast(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}
+			if (isReachable(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY())) {
+				hitRangeField[curSamuraiNum][samurais[curSamuraiNum].getSouth(1).getY()][samurais[curSamuraiNum].getSouth(1).getX()] 
+						= samurais[curSamuraiNum].hitRangeFieldNum;
+			}break;
+		}
+	}
+	
+	/**
+	 * set this samurai's occuiped blocks
+	 */
+	public void setScoreField(Samurai samurai) {
+		switch (samurai.getWeapon()) {
+		case 0:setScoreField0();break;
+		case 1:setScoreField1();break;
+		case 2:setScoreField2();break;
+		}
+	}
+	
+	private void setScoreField0() {
+		switch (samurais[curSamuraiNum].getDirection()) {
+		case WEST:
+			for (int i = 1; i <= 3; i++) {
+				if (isReachable(samurais[curSamuraiNum].getWest(i).getX(), samurais[curSamuraiNum].getWest(i).getY()) && 
+						!isSpecial(samurais[curSamuraiNum].getWest(i).getX(), samurais[curSamuraiNum].getWest(i).getY())) {
+					scoreField[samurais[curSamuraiNum].getWest(i).getY()][samurais[curSamuraiNum].getWest(i).getX()] 
+							= samurais[curSamuraiNum].manor;
+				}
+			}break;
+		case EAST:
+			for (int i = 1; i <= 3; i++) {
+				if (isReachable(samurais[curSamuraiNum].getEast(i).getX(), samurais[curSamuraiNum].getEast(i).getY()) && 
+						!isSpecial(samurais[curSamuraiNum].getEast(i).getX(), samurais[curSamuraiNum].getEast(i).getY())) {
+					scoreField[samurais[curSamuraiNum].getEast(i).getY()][samurais[curSamuraiNum].getEast(i).getX()] 
+							= samurais[curSamuraiNum].manor;
+				}
+			}break;
+		case NORTH:
+			for (int i = 1; i <= 3; i++) {
+				if (isReachable(samurais[curSamuraiNum].getNorth(i).getX(), samurais[curSamuraiNum].getNorth(i).getY()) && 
+						!isSpecial(samurais[curSamuraiNum].getNorth(i).getX(), samurais[curSamuraiNum].getNorth(i).getY())) {
+					scoreField[samurais[curSamuraiNum].getNorth(i).getY()][samurais[curSamuraiNum].getNorth(i).getX()] 
+							= samurais[curSamuraiNum].manor;
+				}
+			}break;
+		case SOUTH:
+			for (int i = 1; i <= 3; i++) {
+				if (isReachable(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY()) && 
+						!isSpecial(samurais[curSamuraiNum].getSouth(i).getX(), samurais[curSamuraiNum].getSouth(i).getY())) {
+					scoreField[samurais[curSamuraiNum].getSouth(i).getY()][samurais[curSamuraiNum].getSouth(i).getX()] 
+							= samurais[curSamuraiNum].manor;
+				}
+			}break;
+		}
+	}
+	
+	private void setScoreField1() {		
+		switch (samurais[curSamuraiNum].getDirection()) {
+		case WEST:
+			for (int i = 1; i <= 2; i++) {
+				if (!isSpecial(samurais[curSamuraiNum].getSouth(i).getX(), samurais[curSamuraiNum].getSouth(i).getY()) && 
+						isReachable(samurais[curSamuraiNum].getSouth(i).getX(), samurais[curSamuraiNum].getSouth(i).getY())) {
+					scoreField[samurais[curSamuraiNum].getSouth(i).getY()][samurais[curSamuraiNum].getSouth(i).getX()] 
+							= samurais[curSamuraiNum].manor;
+				}
+				if (!isSpecial(samurais[curSamuraiNum].getWest(i).getX(), samurais[curSamuraiNum].getWest(i).getY()) && 
+						isReachable(samurais[curSamuraiNum].getWest(i).getX(), samurais[curSamuraiNum].getWest(i).getY())) {
+					scoreField[samurais[curSamuraiNum].getWest(i).getY()][samurais[curSamuraiNum].getWest(i).getX()] 
+							= samurais[curSamuraiNum].manor;
+				}
+			}
+			if (!isSpecial(samurais[curSamuraiNum].getSouthWest(1).getX(), samurais[curSamuraiNum].getSouthWest(1).getY()) && 
+					isReachable(samurais[curSamuraiNum].getSouthWest(1).getX(), samurais[curSamuraiNum].getSouthWest(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getSouthWest(1).getY()][samurais[curSamuraiNum].getSouthWest(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}
+			break;
+		case EAST:
+			for (int i = 1; i <= 2; i++) {
+				if (!isSpecial(samurais[curSamuraiNum].getNorth(i).getX(), samurais[curSamuraiNum].getNorth(i).getY()) && 
+						isReachable(samurais[curSamuraiNum].getNorth(i).getX(), samurais[curSamuraiNum].getNorth(i).getY())) {
+					scoreField[samurais[curSamuraiNum].getNorth(i).getY()][samurais[curSamuraiNum].getNorth(i).getX()] 
+							= samurais[curSamuraiNum].manor;
+				}
+				if (!isSpecial(samurais[curSamuraiNum].getEast(i).getX(), samurais[curSamuraiNum].getEast(i).getY()) && 
+						isReachable(samurais[curSamuraiNum].getEast(i).getX(), samurais[curSamuraiNum].getEast(i).getY())) {
+					scoreField[samurais[curSamuraiNum].getEast(i).getY()][samurais[curSamuraiNum].getEast(i).getX()] 
+							= samurais[curSamuraiNum].manor;
+				}
+			}
+			if (!isSpecial(samurais[curSamuraiNum].getNorthEast(1).getX(), samurais[curSamuraiNum].getNorthEast(1).getY()) && 
+					isReachable(samurais[curSamuraiNum].getNorthEast(1).getX(), samurais[curSamuraiNum].getNorthEast(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getNorthEast(1).getY()][samurais[curSamuraiNum].getNorthEast(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}
+			break;
+		case NORTH:
+			for (int i = 1; i <= 2; i++) {
+				if (!isSpecial(samurais[curSamuraiNum].getNorth(i).getX(), samurais[curSamuraiNum].getNorth(i).getY()) && 
+						isReachable(samurais[curSamuraiNum].getNorth(i).getX(), samurais[curSamuraiNum].getNorth(i).getY())) {
+					scoreField[samurais[curSamuraiNum].getNorth(i).getY()][samurais[curSamuraiNum].getNorth(i).getX()] 
+							= samurais[curSamuraiNum].manor;
+				}
+				if (!isSpecial(samurais[curSamuraiNum].getWest(i).getX(), samurais[curSamuraiNum].getWest(i).getY()) && 
+						isReachable(samurais[curSamuraiNum].getWest(i).getX(), samurais[curSamuraiNum].getWest(i).getY())) {
+					scoreField[samurais[curSamuraiNum].getWest(i).getY()][samurais[curSamuraiNum].getWest(i).getX()] 
+							= samurais[curSamuraiNum].manor;
+				}
+			}
+			if (!isSpecial(samurais[curSamuraiNum].getNorthWest(1).getX(), samurais[curSamuraiNum].getNorthWest(1).getY()) && 
+					isReachable(samurais[curSamuraiNum].getNorthWest(1).getX(), samurais[curSamuraiNum].getNorthWest(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getNorthWest(1).getY()][samurais[curSamuraiNum].getNorthWest(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}
+			break;
+		case SOUTH:
+			for (int i = 1; i <= 2; i++) {
+				if (!isSpecial(samurais[curSamuraiNum].getSouth(i).getX(), samurais[curSamuraiNum].getSouth(i).getY()) && 
+						isReachable(samurais[curSamuraiNum].getSouth(i).getX(), samurais[curSamuraiNum].getSouth(i).getY())) {
+					scoreField[samurais[curSamuraiNum].getSouth(i).getY()][samurais[curSamuraiNum].getSouth(i).getX()] 
+							= samurais[curSamuraiNum].manor;
+				}
+				if (!isSpecial(samurais[curSamuraiNum].getEast(i).getX(), samurais[curSamuraiNum].getEast(i).getY()) && 
+						isReachable(samurais[curSamuraiNum].getEast(i).getX(), samurais[curSamuraiNum].getEast(i).getY())) {
+					scoreField[samurais[curSamuraiNum].getEast(i).getY()][samurais[curSamuraiNum].getEast(i).getX()] 
+							= samurais[curSamuraiNum].manor;
+				}
+			}
+			if (!isSpecial(samurais[curSamuraiNum].getSouthEast(1).getX(), samurais[curSamuraiNum].getSouthEast(1).getY()) && 
+					isReachable(samurais[curSamuraiNum].getSouthEast(1).getX(), samurais[curSamuraiNum].getSouthEast(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getSouthEast(1).getY()][samurais[curSamuraiNum].getSouthEast(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}
+			break;
+		}
+	}
+	
+	private void setScoreField2() {
+		if (isReachable(samurais[curSamuraiNum].getSouthEast(1).getX(), samurais[curSamuraiNum].getSouthEast(1).getY()) && 
+				!isSpecial(samurais[curSamuraiNum].getSouthEast(1).getX(), samurais[curSamuraiNum].getSouthEast(1).getY())) {
+			scoreField[samurais[curSamuraiNum].getSouthEast(1).getY()][samurais[curSamuraiNum].getSouthEast(1).getX()] 
+					= samurais[curSamuraiNum].manor;
+		}
+		if (isReachable(samurais[curSamuraiNum].getSouthWest(1).getX(), samurais[curSamuraiNum].getSouthWest(1).getY()) &&
+				!isSpecial(samurais[curSamuraiNum].getSouthWest(1).getX(), samurais[curSamuraiNum].getSouthWest(1).getY())) {
+			scoreField[samurais[curSamuraiNum].getSouthWest(1).getY()][samurais[curSamuraiNum].getSouthWest(1).getX()] 
+					= samurais[curSamuraiNum].manor;
+		}
+		if (isReachable(samurais[curSamuraiNum].getNorthWest(1).getX(), samurais[curSamuraiNum].getNorthWest(1).getY()) && 
+				!isSpecial(samurais[curSamuraiNum].getNorthWest(1).getX(), samurais[curSamuraiNum].getNorthWest(1).getY())) {
+			scoreField[samurais[curSamuraiNum].getNorthWest(1).getY()][samurais[curSamuraiNum].getNorthWest(1).getX()] 
+					= samurais[curSamuraiNum].manor;
+		}
+		if (isReachable(samurais[curSamuraiNum].getNorthEast(1).getX(), samurais[curSamuraiNum].getNorthEast(1).getY()) && 
+				!isSpecial(samurais[curSamuraiNum].getNorthEast(1).getX(), samurais[curSamuraiNum].getNorthEast(1).getY())) {
+			scoreField[samurais[curSamuraiNum].getNorthEast(1).getY()][samurais[curSamuraiNum].getNorthEast(1).getX()] 
+					= samurais[curSamuraiNum].manor;
+		}
+		switch (samurais[curSamuraiNum].getDirection()) {
+		case WEST:
+			if (isReachable(samurais[curSamuraiNum].getWest(1).getX(), samurais[curSamuraiNum].getWest(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getWest(1).getX(), samurais[curSamuraiNum].getWest(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getWest(1).getY()][samurais[curSamuraiNum].getWest(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}
+			if (isReachable(samurais[curSamuraiNum].getNorth(1).getX(), samurais[curSamuraiNum].getNorth(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getNorth(1).getX(), samurais[curSamuraiNum].getNorth(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getNorth(1).getY()][samurais[curSamuraiNum].getNorth(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}if (isReachable(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getSouth(1).getY()][samurais[curSamuraiNum].getSouth(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}break;
+		case EAST:
+			if (isReachable(samurais[curSamuraiNum].getEast(1).getX(), samurais[curSamuraiNum].getEast(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getEast(1).getX(), samurais[curSamuraiNum].getEast(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getEast(1).getY()][samurais[curSamuraiNum].getEast(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}
+			if (isReachable(samurais[curSamuraiNum].getNorth(1).getX(), samurais[curSamuraiNum].getNorth(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getNorth(1).getX(), samurais[curSamuraiNum].getNorth(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getNorth(1).getY()][samurais[curSamuraiNum].getNorth(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}if (isReachable(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getSouth(1).getY()][samurais[curSamuraiNum].getSouth(1).getX()]
+						= samurais[curSamuraiNum].manor;
+			}break;
+		case NORTH:
+			if (isReachable(samurais[curSamuraiNum].getWest(1).getX(), samurais[curSamuraiNum].getWest(1).getY())&&
+					!isSpecial(samurais[curSamuraiNum].getWest(1).getX(), samurais[curSamuraiNum].getWest(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getWest(1).getY()][samurais[curSamuraiNum].getWest(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}
+			if (isReachable(samurais[curSamuraiNum].getEast(1).getX(), samurais[curSamuraiNum].getEast(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getEast(1).getX(), samurais[curSamuraiNum].getEast(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getEast(1).getY()][samurais[curSamuraiNum].getEast(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}
+			if (isReachable(samurais[curSamuraiNum].getNorth(1).getX(), samurais[curSamuraiNum].getNorth(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getNorth(1).getX(), samurais[curSamuraiNum].getNorth(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getNorth(1).getY()][samurais[curSamuraiNum].getNorth(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}break;
+		case SOUTH:
+			if (isReachable(samurais[curSamuraiNum].getWest(1).getX(), samurais[curSamuraiNum].getWest(1).getY())&&
+					!isSpecial(samurais[curSamuraiNum].getWest(1).getX(), samurais[curSamuraiNum].getWest(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getWest(1).getY()][samurais[curSamuraiNum].getWest(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}
+			if (isReachable(samurais[curSamuraiNum].getEast(1).getX(), samurais[curSamuraiNum].getEast(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getEast(1).getX(), samurais[curSamuraiNum].getEast(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getEast(1).getY()][samurais[curSamuraiNum].getEast(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}
+			if (isReachable(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY()) && 
+					!isSpecial(samurais[curSamuraiNum].getSouth(1).getX(), samurais[curSamuraiNum].getSouth(1).getY())) {
+				scoreField[samurais[curSamuraiNum].getSouth(1).getY()][samurais[curSamuraiNum].getSouth(1).getX()] 
+						= samurais[curSamuraiNum].manor;
+			}break;
+		}
+	}
+	
+	/**
+	 * @param rootHitRangeField
+	 * @return the total blocks can be occupied
+	 */
+	private int getTotalScore(int[][] rootHitRangeField) {
+		for (int i = 0; i < rootHitRangeField.length; i++) {
+			for (int j = 0; j < rootHitRangeField[0].length; j++) {
+				if (rootHitRangeField[i][j] != -1) {
+					totalScore++;
+				}
+			}
+		}
+		//due to the reality
+		return totalScore / 3;
+	}
+	
+	/**
+	 * @return the blocks occupied by the teamCap
+	 */
+	public int getScoreA() {
+		int result = 0;
+		for (int i = 0; i < scoreField.length; i++) {
+			for (int j = 0; j < scoreField[0].length; j++) {
+				if (scoreField[i][j] == 1) {
+					result++;
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * @return the blocks occupied by the teamIronMan
+	 */
+	public int getScoreB() {
+		int result = 0;
+		for (int i = 0; i < scoreField.length; i++) {
+			for (int j = 0; j < scoreField[0].length; j++) {
+				if (scoreField[i][j] == 2) {
+					result++;
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * 
 	 * @param input
 	 * @return actual actions in the way of String, spaced by the " "
@@ -232,7 +747,43 @@ public class Game implements Runnable{
 		}
 		return inputActions;
 	}
+	
+//	private void printHitRange() {
+//		for (int i = 0; i < 12; i++) {
+//			for (int j = 0; j < 12; j++) {
+//				System.out.print(hitRangeField[curSamuraiNum][i][j] + " ");
+//			}
+//			System.out.println();
+//		}
+//	}
+//	
+//	private void printRootOne() {
+//		for (int i = 0; i < 12; i++) {
+//			for (int j = 0; j < 12; j++) {
+//				System.out.print(rootHitRangeField[i][j] + " ");
+//			}
+//			System.out.println();
+//		}
+//	}
 
+//	private void printScoreField() {
+//		for (int i = 0; i < 12; i++) {
+//			for (int j = 0; j < 12; j++) {
+//				System.out.print(scoreField[i][j] + " ");
+//			}
+//			System.out.println();
+//		}
+//	}
+//	
+//	private void printScoreFieldOfCon() {
+//		for (int i = 0; i < 12; i++) {
+//			for (int j = 0; j < 12; j++) {
+//				System.out.print(Configure.scoreField[i][j] + " ");
+//			}
+//			System.out.println();
+//		}
+//	}
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
